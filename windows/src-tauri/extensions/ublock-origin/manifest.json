@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "uBlock Origin Lite / Core Filter",
+  "version": "1.60.0",
+  "description": "High-efficiency content blocker for Loop Windows WebView2",
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestWithHostAccess",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

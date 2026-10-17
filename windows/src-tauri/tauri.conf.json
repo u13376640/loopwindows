@@ -39,7 +39,7 @@
       "icons/icon.ico"
     ],
     "resources": [
-      "../extensions/ublock-origin/**"
+      "extensions/**/*"
     ]
   }
 }
