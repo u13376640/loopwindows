@@ -46,11 +46,13 @@ body, html {
   display: flex;
   align-items: center;
   height: 44px;
-  background: rgba(26, 26, 26, 0.65);
+  background: rgba(26, 26, 26, 0.75);
   border-bottom: 1px solid var(--border-subtle);
   padding: 0 4px 0 14px;
-  gap: 12px;
+  gap: 8px;
   z-index: 10;
+  -webkit-app-region: drag;
+  user-select: none;
 }
 
 .brand {
@@ -58,6 +60,7 @@ body, html {
   align-items: center;
   gap: 8px;
   cursor: default;
+  -webkit-app-region: drag;
 }
 
 .logo-icon {
@@ -76,8 +79,8 @@ body, html {
 .nav-controls {
   display: flex;
   align-items: center;
-  flex: 1;
-  gap: 6px;
+  gap: 4px;
+  -webkit-app-region: no-drag;
 }
 
 .nav-btn {
@@ -92,6 +95,7 @@ body, html {
   justify-content: center;
   cursor: pointer;
   transition: background 0.15s ease;
+  -webkit-app-region: no-drag;
 }
 
 .nav-btn:hover {
@@ -102,58 +106,52 @@ body, html {
   background: rgba(255, 255, 255, 0.14);
 }
 
-/* Omnibox */
-.omnibox {
+/* Center Window Drag Spacer */
+.titlebar-drag-spacer {
+  flex: 1;
+  height: 100%;
   display: flex;
   align-items: center;
-  flex: 1;
-  max-width: 680px;
-  height: 32px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 0 8px 0 10px;
+  justify-content: center;
+  cursor: default;
+  -webkit-app-region: drag;
+}
+
+.window-title-hint {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
   gap: 8px;
-  transition: border-color 0.2s, background 0.2s;
-}
-
-.omnibox:focus-within {
-  background: rgba(0, 0, 0, 0.4);
-  border-color: var(--accent);
-}
-
-.lock-indicator {
-  color: #107c41;
-  flex-shrink: 0;
-}
-
-#url-bar {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: var(--text-primary);
-  font-size: 13px;
-  outline: none;
-  font-family: inherit;
+  -webkit-app-region: no-drag;
 }
 
 .shield-badge {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 12px;
   background: rgba(0, 120, 212, 0.18);
   color: #60a5fa;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  -webkit-app-region: no-drag;
 }
 
 /* Caption buttons */
 .window-controls {
   display: flex;
   align-items: center;
+  -webkit-app-region: no-drag;
+  margin-left: 4px;
 }
 
 .caption-btn {
@@ -167,6 +165,8 @@ body, html {
   justify-content: center;
   cursor: pointer;
   transition: background 0.12s;
+  -webkit-app-region: no-drag;
+  pointer-events: auto;
 }
 
 .caption-btn:hover {

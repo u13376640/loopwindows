@@ -100,6 +100,11 @@ fn window_close(window: Window) {
     let _ = window.close();
 }
 
+#[tauri::command]
+fn window_start_dragging(window: Window) {
+    let _ = window.start_dragging();
+}
+
 fn main() {
     let adblock = AdBlockManager::new();
     let chromium_args = adblock.get_chromium_args();
@@ -126,6 +131,7 @@ fn main() {
             window_minimize,
             window_maximize_toggle,
             window_close,
+            window_start_dragging,
         ])
         .setup(|_app| {
             Ok(())
