@@ -1,0 +1,6 @@
+{
+  "summary": "Implementation plan for porting Loop to a high-performance, low-memory Windows desktop application utilizing Tauri v2 with Rust, shared Windows WebView2 runtime, and direct uBlock Origin extension loading.",
+  "updatedAt": "2026-10-17T18:36:17.810071699Z",
+  "requestFeedback": true,
+  "userFacing": true
+}

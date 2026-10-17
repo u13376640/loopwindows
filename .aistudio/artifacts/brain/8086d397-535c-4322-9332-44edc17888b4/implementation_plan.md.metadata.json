@@ -1,0 +1,6 @@
+{
+  "summary":  "Implementation plan for fixing back swipe navigation to reliably navigate through previous webpages and prevent accidental app closures with a double-back confirmation toast on the root webpage.",
+  "updatedAt":  "2026-10-12T03:12:31.629839579Z",
+  "requestFeedback":  true,
+  "userFacing":  true
+}
