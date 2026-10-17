@@ -265,7 +265,51 @@ btnSaveDns.addEventListener('click', async () => {
   }, 400);
 });
 
-// 6. Initialize Application State
+// 6. Proxy & Firewall Tunnel Management
+const proxyRadios = document.querySelectorAll('input[name="proxy-choice"]');
+const proxyFields = document.getElementById("proxy-fields");
+const inputProxyHost = document.getElementById("input-proxy-host");
+const inputProxyPort = document.getElementById("input-proxy-port");
+const inputProxyBypass = document.getElementById("input-proxy-bypass");
+const btnSaveProxy = document.getElementById("btn-save-proxy");
+const proxyStatusMsg = document.getElementById("proxy-status-msg");
+const proxyBadge = document.getElementById("proxy-badge");
+const proxyCardBadge = document.getElementById("proxy-card-badge");
+
+proxyRadios.forEach((radio) => {
+  radio.addEventListener('change', (e) => {
+    if (e.target.value === 'direct') {
+      proxyFields.classList.add('hidden');
+    } else {
+      proxyFields.classList.remove('hidden');
+      if (e.target.value === 'socks5' && !inputProxyPort.value) {
+        inputProxyPort.value = '1080';
+      } else if (e.target.value === 'http' && !inputProxyPort.value) {
+        inputProxyPort.value = '8080';
+      }
+    }
+  });
+});
+
+btnSaveProxy.addEventListener('click', async () => {
+  const selected = document.querySelector('input[name="proxy-choice"]:checked')?.value || "direct";
+  const host = inputProxyHost.value.trim() || "127.0.0.1";
+  const port = inputProxyPort.value.trim() || (selected === "socks5" ? "1080" : "8080");
+  const bypass = inputProxyBypass.value.trim() || "<local>;127.0.0.1;localhost";
+
+  await safeInvoke("set_proxy_config", { mode: selected, host, port, bypass });
+
+  const label = selected === "socks5" ? "SOCKS5" : selected === "http" ? "HTTP Proxy" : "Direct";
+  proxyBadge.textContent = label;
+  proxyCardBadge.textContent = label;
+  proxyStatusMsg.classList.remove('hidden');
+
+  setTimeout(() => {
+    webFrame.src = webFrame.src;
+  }, 400);
+});
+
+// 7. Initialize Application State
 async function initApp() {
   const settings = await safeInvoke("get_app_settings");
   currentActiveUrl = settings?.active_url || DEFAULT_URL;
@@ -285,6 +329,21 @@ async function initApp() {
   else if (dnsProvider === "google") dnsBadge.textContent = "Google DNS";
   else if (dnsProvider === "custom") dnsBadge.textContent = "Custom DoH";
   else dnsBadge.textContent = "System (Off)";
+
+  // Initialize Proxy state
+  const proxyMode = settings?.proxy_mode || "direct";
+  inputProxyHost.value = settings?.proxy_host || "127.0.0.1";
+  inputProxyPort.value = settings?.proxy_port || (proxyMode === "socks5" ? "1080" : "8080");
+  inputProxyBypass.value = settings?.proxy_bypass || "<local>;127.0.0.1;localhost";
+
+  const targetProxyRadio = document.querySelector(`input[name="proxy-choice"][value="${proxyMode}"]`);
+  if (targetProxyRadio) {
+    targetProxyRadio.checked = true;
+    if (proxyMode !== "direct") proxyFields.classList.remove('hidden');
+  }
+  const proxyLabel = proxyMode === "socks5" ? "SOCKS5" : proxyMode === "http" ? "HTTP Proxy" : "Direct";
+  proxyBadge.textContent = proxyLabel;
+  proxyCardBadge.textContent = proxyLabel;
 
   // Check App Lock Password
   if (settings?.has_password) {

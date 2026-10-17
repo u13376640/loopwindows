@@ -41,25 +41,13 @@
 
       <!-- Right Header Actions -->
       <div class="header-actions">
+        <span id="proxy-badge" class="badge">Direct</span>
         <div class="shield-badge" id="ublock-status-badge" title="uBlock Origin Active & Protecting">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
           <span class="shield-text">uBlock</span>
         </div>
         <button id="btn-settings" class="nav-btn" title="Settings (Ctrl+,)">
-          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
-      </div>
-
-      <!-- Windows Caption Buttons -->
-      <div class="window-controls">
-        <button id="btn-win-min" class="caption-btn" title="Minimize">
-          <svg viewBox="0 0 10 1" width="10" height="1"><path d="M0 0h10v1H0z" fill="currentColor"/></svg>
-        </button>
-        <button id="btn-win-max" class="caption-btn" title="Maximize">
-          <svg viewBox="0 0 10 10" width="10" height="10"><path d="M0 0v10h10V0H0zm1 1h8v8H1V1z" fill="currentColor"/></svg>
-        </button>
-        <button id="btn-win-close" class="caption-btn close-btn" title="Close">
-          <svg viewBox="0 0 10 10" width="10" height="10"><path d="M1 0L0 1l4 4-4 4 1 1 4-4 4 4 1-1-4-4 4-4-1-1-4 4-4-4z" fill="currentColor"/></svg>
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1 2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
       </div>
     </header>
@@ -172,7 +160,52 @@
           <div id="dns-status-msg" class="dns-note hidden">Saved! Reload page or restart app to activate new DNS tunnel.</div>
         </div>
 
-        <!-- Section 4: App Lock Password -->
+        <!-- Section 4: SOCKS5 & HTTP Proxy Tunnel -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Proxy & Firewall Bypass</span>
+            <span id="proxy-card-badge" class="badge">Direct</span>
+          </div>
+          <p class="card-desc">Tunnel connections through SOCKS5 (Shadowsocks/V2Ray/Clash/WARP) or HTTP proxy to defeat deep packet inspection and country-level IP bans.</p>
+          <div class="dns-group">
+            <label class="dns-radio">
+              <input type="radio" name="proxy-choice" value="direct" checked />
+              <div class="dns-radio-content">
+                <strong>Direct Connection</strong>
+                <span>Standard direct connection (No proxy)</span>
+              </div>
+            </label>
+            <label class="dns-radio">
+              <input type="radio" name="proxy-choice" value="socks5" />
+              <div class="dns-radio-content">
+                <strong>SOCKS5 Proxy (Recommended)</strong>
+                <span>Supports local client routing (127.0.0.1:1080 / WARP)</span>
+              </div>
+            </label>
+            <label class="dns-radio">
+              <input type="radio" name="proxy-choice" value="http" />
+              <div class="dns-radio-content">
+                <strong>HTTP / HTTPS Proxy</strong>
+                <span>Standard web proxy tunneling</span>
+              </div>
+            </label>
+          </div>
+
+          <div id="proxy-fields" class="hidden" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="input-proxy-host" class="text-input" style="flex: 2;" placeholder="127.0.0.1" />
+              <input type="text" id="input-proxy-port" class="text-input" style="flex: 1;" placeholder="1080" />
+            </div>
+            <input type="text" id="input-proxy-bypass" class="text-input" placeholder="<local>;127.0.0.1;localhost" />
+          </div>
+
+          <div style="margin-top: 12px;">
+            <button id="btn-save-proxy" class="btn primary-btn full-width">Apply Proxy Settings</button>
+          </div>
+          <div id="proxy-status-msg" class="dns-note hidden">Saved! Reloading page or restarting app activates new proxy.</div>
+        </div>
+
+        <!-- Section 5: App Lock Password -->
         <div class="card">
           <div class="card-header">
             <span class="card-title">App Security Lock</span>

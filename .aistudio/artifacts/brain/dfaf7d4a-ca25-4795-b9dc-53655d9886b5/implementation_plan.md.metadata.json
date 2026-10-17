@@ -1,6 +1,6 @@
 {
-  "summary": "Implementation plan for porting Loop to a high-performance, low-memory Windows desktop application utilizing Tauri v2 with Rust, shared Windows WebView2 runtime, and direct uBlock Origin extension loading.",
-  "updatedAt": "2026-10-17T18:36:17.810071699Z",
+  "summary": "Implementation plan to switch Loop Windows to a native top-level webview (eliminating iframe X-Frame-Options restrictions) and add SOCKS5 / HTTP proxy configuration in Settings to bypass ISP and country-level firewalls.",
+  "updatedAt": "2026-10-17T20:31:16.051764750Z",
   "requestFeedback": true,
   "userFacing": true
 }
