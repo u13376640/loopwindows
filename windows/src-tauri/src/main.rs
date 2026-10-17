@@ -6,7 +6,7 @@ mod db;
 use adblock::AdBlockManager;
 use db::{AppSettings, DatabaseManager, ACCESS_CODE, DEFAULT_URL};
 use std::sync::Mutex;
-use tauri::{Manager, State, Window};
+use tauri::{State, Window};
 
 struct AppState {
     db: Mutex<DatabaseManager>,

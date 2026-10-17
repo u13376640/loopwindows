@@ -4,6 +4,7 @@ version = "1.0.0"
 description = "High-performance Loop Windows Desktop Client"
 authors = ["Loop Team"]
 edition = "2021"
+build = "build.rs"
 
 [build-dependencies]
 tauri-build = { version = "2.0", features = [] }
