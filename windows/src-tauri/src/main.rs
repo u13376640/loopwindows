@@ -114,12 +114,10 @@ fn set_dns_config(provider: String, template: String, state: State<AppState>) ->
 }
 
 #[tauri::command]
-fn set_proxy_config(mode: String, host: String, port: String, bypass: String, state: State<AppState>) -> Result<(), String> {
+fn set_proxy_config(mode: String, url: String, state: State<AppState>) -> Result<(), String> {
     let db = state.db.lock().unwrap();
     db.set_setting("proxy_mode", &mode).map_err(|e| e.to_string())?;
-    db.set_setting("proxy_host", &host).map_err(|e| e.to_string())?;
-    db.set_setting("proxy_port", &port).map_err(|e| e.to_string())?;
-    db.set_setting("proxy_bypass", &bypass).map_err(|e| e.to_string())?;
+    db.set_setting("proxy_url", &url).map_err(|e| e.to_string())?;
     Ok(())
 }
 
@@ -128,11 +126,10 @@ fn main() {
     let mut chromium_args = adblock.get_chromium_args();
     let db = DatabaseManager::new();
 
-    // Disable frame/origin restrictions so any web player or site loads without X-Frame-Options blocks
+    // Disable X-Frame-Options and origin restrictions for embedded and top-level pages
     chromium_args.push("--disable-web-security".to_string());
-    chromium_args.push("--allow-running-insecure-content".to_string());
-    chromium_args.push("--disable-site-isolation-trials".to_string());
     chromium_args.push("--disable-features=IsolateOrigins,site-per-process".to_string());
+    chromium_args.push("--allow-running-insecure-content".to_string());
 
     // Configure AdGuard / Custom DNS-over-HTTPS (DoH) to bypass country-level website blocks
     let dns_provider = db.get_setting("dns_provider").unwrap_or_else(|| "adguard".to_string());
@@ -152,18 +149,11 @@ fn main() {
         chromium_args.push(format!("--dns-over-https-template={}", template));
     }
 
-    // Configure SOCKS5 / HTTP Proxy Tunnel to bypass regional ISP/SNI firewalls
+    // Configure SOCKS5 / HTTP Proxy if enabled
     let proxy_mode = db.get_setting("proxy_mode").unwrap_or_else(|| "direct".to_string());
-    let proxy_host = db.get_setting("proxy_host").unwrap_or_else(|| "127.0.0.1".to_string());
-    let proxy_port = db.get_setting("proxy_port").unwrap_or_else(|| "1080".to_string());
-    let proxy_bypass = db.get_setting("proxy_bypass").unwrap_or_else(|| "<local>;127.0.0.1;localhost".to_string());
-
-    if proxy_mode == "socks5" {
-        chromium_args.push(format!("--proxy-server=socks5://{}:{}", proxy_host, proxy_port));
-        chromium_args.push(format!("--proxy-bypass-list={}", proxy_bypass));
-    } else if proxy_mode == "http" {
-        chromium_args.push(format!("--proxy-server=http://{}:{}", proxy_host, proxy_port));
-        chromium_args.push(format!("--proxy-bypass-list={}", proxy_bypass));
+    let proxy_url = db.get_setting("proxy_url").unwrap_or_default();
+    if proxy_mode != "direct" && !proxy_url.is_empty() {
+        chromium_args.push(format!("--proxy-server={}", proxy_url));
     }
 
     // Set Chromium command-line switches for WebView2 before creation

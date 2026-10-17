@@ -265,51 +265,50 @@ btnSaveDns.addEventListener('click', async () => {
   }, 400);
 });
 
-// 6. Proxy & Firewall Tunnel Management
+// 5b. Proxy & SOCKS5 Tunneling Management
 const proxyRadios = document.querySelectorAll('input[name="proxy-choice"]');
-const proxyFields = document.getElementById("proxy-fields");
-const inputProxyHost = document.getElementById("input-proxy-host");
-const inputProxyPort = document.getElementById("input-proxy-port");
-const inputProxyBypass = document.getElementById("input-proxy-bypass");
+const proxyInputContainer = document.getElementById("proxy-input-container");
+const inputProxyUrl = document.getElementById("input-proxy-url");
 const btnSaveProxy = document.getElementById("btn-save-proxy");
 const proxyStatusMsg = document.getElementById("proxy-status-msg");
 const proxyBadge = document.getElementById("proxy-badge");
-const proxyCardBadge = document.getElementById("proxy-card-badge");
 
 proxyRadios.forEach((radio) => {
   radio.addEventListener('change', (e) => {
     if (e.target.value === 'direct') {
-      proxyFields.classList.add('hidden');
+      proxyInputContainer.classList.add('hidden');
     } else {
-      proxyFields.classList.remove('hidden');
-      if (e.target.value === 'socks5' && !inputProxyPort.value) {
-        inputProxyPort.value = '1080';
-      } else if (e.target.value === 'http' && !inputProxyPort.value) {
-        inputProxyPort.value = '8080';
+      proxyInputContainer.classList.remove('hidden');
+      if (e.target.value === 'socks5' && !inputProxyUrl.value) {
+        inputProxyUrl.value = "socks5://127.0.0.1:1080";
+      } else if (e.target.value === 'http' && !inputProxyUrl.value) {
+        inputProxyUrl.value = "http://127.0.0.1:8080";
       }
+      inputProxyUrl.focus();
     }
   });
 });
 
 btnSaveProxy.addEventListener('click', async () => {
   const selected = document.querySelector('input[name="proxy-choice"]:checked')?.value || "direct";
-  const host = inputProxyHost.value.trim() || "127.0.0.1";
-  const port = inputProxyPort.value.trim() || (selected === "socks5" ? "1080" : "8080");
-  const bypass = inputProxyBypass.value.trim() || "<local>;127.0.0.1;localhost";
+  const proxyUrl = inputProxyUrl.value.trim();
+  await safeInvoke("set_proxy_config", { mode: selected, url: proxyUrl });
 
-  await safeInvoke("set_proxy_config", { mode: selected, host, port, bypass });
+  if (selected === "direct") {
+    proxyBadge.textContent = "Direct";
+    proxyBadge.classList.remove("active-badge");
+  } else {
+    proxyBadge.textContent = selected.toUpperCase();
+    proxyBadge.classList.add("active-badge");
+  }
 
-  const label = selected === "socks5" ? "SOCKS5" : selected === "http" ? "HTTP Proxy" : "Direct";
-  proxyBadge.textContent = label;
-  proxyCardBadge.textContent = label;
   proxyStatusMsg.classList.remove('hidden');
-
   setTimeout(() => {
     webFrame.src = webFrame.src;
   }, 400);
 });
 
-// 7. Initialize Application State
+// 6. Initialize Application State
 async function initApp() {
   const settings = await safeInvoke("get_app_settings");
   currentActiveUrl = settings?.active_url || DEFAULT_URL;
@@ -332,18 +331,20 @@ async function initApp() {
 
   // Initialize Proxy state
   const proxyMode = settings?.proxy_mode || "direct";
-  inputProxyHost.value = settings?.proxy_host || "127.0.0.1";
-  inputProxyPort.value = settings?.proxy_port || (proxyMode === "socks5" ? "1080" : "8080");
-  inputProxyBypass.value = settings?.proxy_bypass || "<local>;127.0.0.1;localhost";
-
+  const proxyUrl = settings?.proxy_url || "";
+  inputProxyUrl.value = proxyUrl;
   const targetProxyRadio = document.querySelector(`input[name="proxy-choice"][value="${proxyMode}"]`);
   if (targetProxyRadio) {
     targetProxyRadio.checked = true;
-    if (proxyMode !== "direct") proxyFields.classList.remove('hidden');
+    if (proxyMode !== "direct") proxyInputContainer.classList.remove('hidden');
   }
-  const proxyLabel = proxyMode === "socks5" ? "SOCKS5" : proxyMode === "http" ? "HTTP Proxy" : "Direct";
-  proxyBadge.textContent = proxyLabel;
-  proxyCardBadge.textContent = proxyLabel;
+  if (proxyMode === "direct") {
+    proxyBadge.textContent = "Direct";
+    proxyBadge.classList.remove("active-badge");
+  } else {
+    proxyBadge.textContent = proxyMode.toUpperCase();
+    proxyBadge.classList.add("active-badge");
+  }
 
   // Check App Lock Password
   if (settings?.has_password) {

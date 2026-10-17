@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "Loop Windows",
+        "title": "Loop",
         "width": 1280,
         "height": 820,
         "minWidth": 800,
@@ -21,7 +21,7 @@
         "resizable": true,
         "fullscreen": false,
         "decorations": true,
-        "transparent": true,
+        "transparent": false,
         "theme": "Dark",
         "shadow": true,
         "dragDropEnabled": false

@@ -26,9 +26,7 @@ pub struct AppSettings {
     pub dns_provider: String,
     pub custom_dns_template: String,
     pub proxy_mode: String,
-    pub proxy_host: String,
-    pub proxy_port: String,
-    pub proxy_bypass: String,
+    pub proxy_url: String,
 }
 
 pub struct DatabaseManager {
@@ -83,9 +81,7 @@ impl DatabaseManager {
         self.ensure_default_setting(&conn, "dns_provider", "adguard")?;
         self.ensure_default_setting(&conn, "custom_dns_template", "https://dns.adguard-dns.com/dns-query")?;
         self.ensure_default_setting(&conn, "proxy_mode", "direct")?;
-        self.ensure_default_setting(&conn, "proxy_host", "127.0.0.1")?;
-        self.ensure_default_setting(&conn, "proxy_port", "1080")?;
-        self.ensure_default_setting(&conn, "proxy_bypass", "<local>;127.0.0.1;localhost")?;
+        self.ensure_default_setting(&conn, "proxy_url", "")?;
 
         Ok(())
     }
@@ -129,9 +125,7 @@ impl DatabaseManager {
             dns_provider: self.get_setting("dns_provider").unwrap_or_else(|| "adguard".to_string()),
             custom_dns_template: self.get_setting("custom_dns_template").unwrap_or_else(|| "https://dns.adguard-dns.com/dns-query".to_string()),
             proxy_mode: self.get_setting("proxy_mode").unwrap_or_else(|| "direct".to_string()),
-            proxy_host: self.get_setting("proxy_host").unwrap_or_else(|| "127.0.0.1".to_string()),
-            proxy_port: self.get_setting("proxy_port").unwrap_or_else(|| "1080".to_string()),
-            proxy_bypass: self.get_setting("proxy_bypass").unwrap_or_else(|| "<local>;127.0.0.1;localhost".to_string()),
+            proxy_url: self.get_setting("proxy_url").unwrap_or_default(),
         }
     }
 
