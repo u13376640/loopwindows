@@ -23,6 +23,8 @@ pub struct AppSettings {
     pub is_desktop_mode: bool,
     pub is_adblock_enabled: bool,
     pub blocked_ads_count: i64,
+    pub dns_provider: String,
+    pub custom_dns_template: String,
 }
 
 pub struct DatabaseManager {
@@ -74,6 +76,8 @@ impl DatabaseManager {
         self.ensure_default_setting(&conn, "is_desktop_mode", "false")?;
         self.ensure_default_setting(&conn, "is_adblock_enabled", "true")?;
         self.ensure_default_setting(&conn, "blocked_ads_count", "0")?;
+        self.ensure_default_setting(&conn, "dns_provider", "adguard")?;
+        self.ensure_default_setting(&conn, "custom_dns_template", "https://dns.adguard-dns.com/dns-query")?;
 
         Ok(())
     }
@@ -114,6 +118,8 @@ impl DatabaseManager {
             is_desktop_mode: self.get_setting("is_desktop_mode").map(|v| v == "true").unwrap_or(false),
             is_adblock_enabled: self.get_setting("is_adblock_enabled").map(|v| v == "true").unwrap_or(true),
             blocked_ads_count: self.get_setting("blocked_ads_count").and_then(|v| v.parse().ok()).unwrap_or(0),
+            dns_provider: self.get_setting("dns_provider").unwrap_or_else(|| "adguard".to_string()),
+            custom_dns_template: self.get_setting("custom_dns_template").unwrap_or_else(|| "https://dns.adguard-dns.com/dns-query".to_string()),
         }
     }
 

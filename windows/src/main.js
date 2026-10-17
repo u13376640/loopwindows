@@ -229,11 +229,62 @@ btnDefaultUrl.addEventListener("click", async () => {
   navigate(currentActiveUrl);
 });
 
-// 5. Initialize Application State
+// 5. Secure DNS (DoH) Management
+const dnsRadios = document.querySelectorAll('input[name="dns-choice"]');
+const customDnsContainer = document.getElementById("custom-dns-container");
+const inputCustomDns = document.getElementById("input-custom-dns");
+const btnSaveDns = document.getElementById("btn-save-dns");
+const dnsStatusMsg = document.getElementById("dns-status-msg");
+const dnsBadge = document.getElementById("dns-badge");
+
+dnsRadios.forEach((radio) => {
+  radio.addEventListener('change', (e) => {
+    if (e.target.value === 'custom') {
+      customDnsContainer.classList.remove('hidden');
+      inputCustomDns.focus();
+    } else {
+      customDnsContainer.classList.add('hidden');
+    }
+  });
+});
+
+btnSaveDns.addEventListener('click', async () => {
+  const selected = document.querySelector('input[name="dns-choice"]:checked')?.value || "adguard";
+  const customTemplate = inputCustomDns.value.trim() || "https://dns.adguard-dns.com/dns-query";
+  await safeInvoke("set_dns_config", { provider: selected, template: customTemplate });
+
+  if (selected === "adguard") dnsBadge.textContent = "AdGuard DNS";
+  else if (selected === "cloudflare") dnsBadge.textContent = "Cloudflare 1.1.1.1";
+  else if (selected === "google") dnsBadge.textContent = "Google DNS";
+  else if (selected === "custom") dnsBadge.textContent = "Custom DoH";
+  else dnsBadge.textContent = "System (Off)";
+
+  dnsStatusMsg.classList.remove('hidden');
+  setTimeout(() => {
+    webFrame.src = webFrame.src;
+  }, 400);
+});
+
+// 6. Initialize Application State
 async function initApp() {
   const settings = await safeInvoke("get_app_settings");
   currentActiveUrl = settings?.active_url || DEFAULT_URL;
   settingActiveUrl.value = currentActiveUrl;
+
+  // Initialize DNS Provider state
+  const dnsProvider = settings?.dns_provider || "adguard";
+  const customTemplate = settings?.custom_dns_template || "https://dns.adguard-dns.com/dns-query";
+  inputCustomDns.value = customTemplate;
+  const targetRadio = document.querySelector(`input[name="dns-choice"][value="${dnsProvider}"]`);
+  if (targetRadio) {
+    targetRadio.checked = true;
+    if (dnsProvider === "custom") customDnsContainer.classList.remove('hidden');
+  }
+  if (dnsProvider === "adguard") dnsBadge.textContent = "AdGuard DNS";
+  else if (dnsProvider === "cloudflare") dnsBadge.textContent = "Cloudflare 1.1.1.1";
+  else if (dnsProvider === "google") dnsBadge.textContent = "Google DNS";
+  else if (dnsProvider === "custom") dnsBadge.textContent = "Custom DoH";
+  else dnsBadge.textContent = "System (Off)";
 
   // Check App Lock Password
   if (settings?.has_password) {

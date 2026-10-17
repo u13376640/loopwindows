@@ -117,7 +117,62 @@
           </div>
         </div>
 
-        <!-- Section 3: App Lock Password -->
+        <!-- Section 3: Secure DNS (DoH) / AdGuard Anti-Censorship -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Encrypted DNS (Anti-Block)</span>
+            <span id="dns-badge" class="badge active-badge">AdGuard DNS</span>
+          </div>
+          <p class="card-desc">Bypasses country-level ISP blocking, domain tampering, and censorship using encrypted DNS-over-HTTPS (DoH).</p>
+          <div class="dns-group">
+            <label class="dns-radio">
+              <input type="radio" name="dns-choice" value="adguard" checked />
+              <div class="dns-radio-content">
+                <strong>AdGuard DNS (Anti-Block & Ad Filtering)</strong>
+                <span>Recommended: Bypasses ISP censorship</span>
+              </div>
+            </label>
+            <label class="dns-radio">
+              <input type="radio" name="dns-choice" value="cloudflare" />
+              <div class="dns-radio-content">
+                <strong>Cloudflare 1.1.1.1</strong>
+                <span>Ultra-fast, privacy-focused DoH</span>
+              </div>
+            </label>
+            <label class="dns-radio">
+              <input type="radio" name="dns-choice" value="google" />
+              <div class="dns-radio-content">
+                <strong>Google Public DNS (8.8.8.8)</strong>
+                <span>Global reliable DoH</span>
+              </div>
+            </label>
+            <label class="dns-radio">
+              <input type="radio" name="dns-choice" value="custom" />
+              <div class="dns-radio-content">
+                <strong>Custom DoH Resolver</strong>
+                <span>Enter custom HTTPS template</span>
+              </div>
+            </label>
+            <label class="dns-radio">
+              <input type="radio" name="dns-choice" value="system" />
+              <div class="dns-radio-content">
+                <strong>System Default (Disabled)</strong>
+                <span>Standard local ISP resolver</span>
+              </div>
+            </label>
+          </div>
+
+          <div id="custom-dns-container" class="hidden" style="margin-top: 10px;">
+            <input type="text" id="input-custom-dns" class="text-input" placeholder="https://dns.adguard-dns.com/dns-query" />
+          </div>
+
+          <div style="margin-top: 12px;">
+            <button id="btn-save-dns" class="btn primary-btn full-width">Apply DNS Settings</button>
+          </div>
+          <div id="dns-status-msg" class="dns-note hidden">Saved! Reload page or restart app to activate new DNS tunnel.</div>
+        </div>
+
+        <!-- Section 4: App Lock Password -->
         <div class="card">
           <div class="card-header">
             <span class="card-title">App Security Lock</span>

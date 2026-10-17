@@ -105,10 +105,36 @@ fn window_start_dragging(window: Window) {
     let _ = window.start_dragging();
 }
 
+#[tauri::command]
+fn set_dns_config(provider: String, template: String, state: State<AppState>) -> Result<(), String> {
+    let db = state.db.lock().unwrap();
+    db.set_setting("dns_provider", &provider).map_err(|e| e.to_string())?;
+    db.set_setting("custom_dns_template", &template).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 fn main() {
     let adblock = AdBlockManager::new();
-    let chromium_args = adblock.get_chromium_args();
+    let mut chromium_args = adblock.get_chromium_args();
     let db = DatabaseManager::new();
+
+    // Configure AdGuard / Custom DNS-over-HTTPS (DoH) to bypass country-level website blocks
+    let dns_provider = db.get_setting("dns_provider").unwrap_or_else(|| "adguard".to_string());
+    let custom_dns = db.get_setting("custom_dns_template").unwrap_or_else(|| "https://dns.adguard-dns.com/dns-query".to_string());
+
+    let doh_template = match dns_provider.as_str() {
+        "adguard" => Some("https://dns.adguard-dns.com/dns-query"),
+        "cloudflare" => Some("https://cloudflare-dns.com/dns-query"),
+        "google" => Some("https://dns.google/dns-query"),
+        "custom" => if !custom_dns.is_empty() { Some(custom_dns.as_str()) } else { Some("https://dns.adguard-dns.com/dns-query") },
+        "system" => None,
+        _ => Some("https://dns.adguard-dns.com/dns-query"),
+    };
+
+    if let Some(template) = doh_template {
+        chromium_args.push("--enable-features=DnsOverHttps".to_string());
+        chromium_args.push(format!("--dns-over-https-template={}", template));
+    }
 
     // Set Chromium command-line switches for WebView2 before creation
     let args_str = chromium_args.join(" ");
@@ -132,6 +158,7 @@ fn main() {
             window_maximize_toggle,
             window_close,
             window_start_dragging,
+            set_dns_config,
         ])
         .setup(|_app| {
             Ok(())
