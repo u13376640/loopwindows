@@ -7,6 +7,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -14,14 +17,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Node.js
+      - name: Setup Node.js 22 (LTS)
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
           cache-dependency-path: windows/package.json
 
-      - name: Install Rust stable
+      - name: Setup Rust Stable
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: x86_64-pc-windows-msvc
@@ -31,23 +34,17 @@ jobs:
         with:
           workspaces: windows/src-tauri
 
-      - name: Install Frontend Dependencies
+      - name: Install Frontend Dependencies & Build UI
         working-directory: windows
-        run: npm install
+        run: |
+          npm install
+          npm run build
 
-      - name: Build Tauri Windows App
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          projectPath: windows
-          tagName: v__VERSION__
-          releaseName: 'Loop Windows v__VERSION__'
-          releaseBody: 'Loop Windows Release with direct uBlock Origin extension support'
-          releaseDraft: false
-          prerelease: false
+      - name: Compile Standalone Windows Application
+        working-directory: windows
+        run: npx @tauri-apps/cli build
 
-      - name: Upload Windows Artifacts (.msi and .exe)
+      - name: Upload Windows Installers (.msi and .exe)
         uses: actions/upload-artifact@v4
         with:
           name: loop-windows-binaries

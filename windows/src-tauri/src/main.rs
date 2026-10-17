@@ -6,7 +6,7 @@ mod db;
 use adblock::AdBlockManager;
 use db::{AppSettings, DatabaseManager, ACCESS_CODE, DEFAULT_URL};
 use std::sync::Mutex;
-use tauri::{AppHandle, Manager, State, Window};
+use tauri::{Manager, State, Window};
 
 struct AppState {
     db: Mutex<DatabaseManager>,
@@ -127,16 +127,7 @@ fn main() {
             window_maximize_toggle,
             window_close,
         ])
-        .setup(|app| {
-            let window = app.get_webview_window("main").unwrap();
-
-            // Apply Windows 11 Acrylic / Mica background effect if supported
-            #[cfg(target_os = "windows")]
-            {
-                use window_vibrancy::apply_mica;
-                let _ = apply_mica(&window, None);
-            }
-
+        .setup(|_app| {
             Ok(())
         })
         .run(tauri::generate_context!())
