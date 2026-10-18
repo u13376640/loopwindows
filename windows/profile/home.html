@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loop - Control Hub</title>
+  <style>
+    :root {
+      --bg-app: #1e1e1e;
+      --bg-card: #252526;
+      --bg-card-hover: #2d2d30;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #0078d4;
+      --accent-hover: #1084d8;
+      --text-main: #f3f3f3;
+      --text-sub: #a0a0a0;
+      --success: #4ade80;
+      --warn: #fde047;
+      --danger: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg-app);
+      color: var(--text-main);
+      font-family: "Segoe UI Variable Text", "Segoe UI", -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      color: var(--accent);
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .subtitle {
+      color: var(--text-sub);
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 16px;
+      width: 100%;
+      max-width: 860px;
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-desc {
+      font-size: 12.5px;
+      color: var(--text-sub);
+      line-height: 1.5;
+    }
+    .badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 12px;
+      background: rgba(74, 222, 128, 0.15);
+      color: var(--success);
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-extension {
+      background: #805ad5;
+      color: #fff;
+    }
+    .btn-extension:hover { background: #6b46c1; }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+    .btn-outline:hover { background: rgba(255, 255, 255, 0.08); }
+    .input-row {
+      display: flex;
+      gap: 8px;
+    }
+    .input-text {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12.5px;
+    }
+    .log-box {
+      background: #141414;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 11.5px;
+      color: #cbd5e1;
+      max-height: 120px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      line-height: 1.4;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="brand">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.5" stroke-dasharray="40 16"/>
+        <circle cx="12" cy="12" r="3.5" fill="currentColor"/>
+      </svg>
+      <h1>Loop</h1>
+    </div>
+    <p class="subtitle">Standalone Mozilla Firefox (Gecko) Engine &bull; Strict TRR Mode 3 &bull; Encrypted Client Hello</p>
+  </div>
+
+  <div class="grid">
+    <!-- Card 1: Main Video Player -->
+    <div class="card">
+      <div class="card-title">
+        <span>Main Video Portal</span>
+        <span class="badge">Active</span>
+      </div>
+      <p class="card-desc">Default homepage: <strong id="display-url">https://dcsplayer.blogspot.com/</strong></p>
+      <a href="https://dcsplayer.blogspot.com/" id="link-main-page" class="btn btn-primary">Open Main Player</a>
+    </div>
+
+    <!-- Card 2: uBlock Origin Extension Installer -->
+    <div class="card">
+      <div class="card-title">
+        <span>uBlock Origin Extension</span>
+        <span class="badge" style="background: rgba(128, 90, 213, 0.2); color: #d6bcfa;">Firefox Addon</span>
+      </div>
+      <p class="card-desc">Click below to open the official Mozilla Add-on store and click <strong>"Add to Firefox"</strong> to install uBlock Origin directly into this Loop profile.</p>
+      <a href="https://addons.mozilla.org/firefox/addon/ublock-origin/" target="_blank" class="btn btn-extension">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+        Install uBlock Origin Extension
+      </a>
+    </div>
+
+    <!-- Card 3: Anti-Censorship & DoH Status -->
+    <div class="card">
+      <div class="card-title">
+        <span>Anti-Censorship & Encrypted DNS</span>
+        <span class="badge">TRR Mode 3</span>
+      </div>
+      <p class="card-desc">Resolver: <strong>AdGuard DoH (https://dns.adguard-dns.com/dns-query)</strong>. ECH is enabled to prevent ISP SNI filtering.</p>
+      <button id="btn-test-doh" class="btn btn-outline">Test DoH Resolution (eporner.com)</button>
+      <div id="doh-log" class="log-box hidden"></div>
+    </div>
+
+    <!-- Card 4: Change Main Page URL (Protected by dcsus7) -->
+    <div class="card">
+      <div class="card-title">
+        <span>Main Page URL Configuration</span>
+        <span id="lock-badge" class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">Locked</span>
+      </div>
+      <p class="card-desc">Enter authorization code (<strong>dcsus7</strong>) to customize the active portal URL.</p>
+      <div id="unlock-section">
+        <div class="input-row">
+          <input type="password" id="input-code" class="input-text" placeholder="Enter access code">
+          <button id="btn-unlock" class="btn btn-outline">Unlock</button>
+        </div>
+      </div>
+      <div id="edit-section" class="hidden">
+        <div class="input-row">
+          <input type="text" id="input-new-url" class="input-text" value="https://dcsplayer.blogspot.com/">
+          <button id="btn-save-url" class="btn btn-primary">Save & Open</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const btnTestDoh = document.getElementById("btn-test-doh");
+    const dohLog = document.getElementById("doh-log");
+    const btnUnlock = document.getElementById("btn-unlock");
+    const inputCode = document.getElementById("input-code");
+    const unlockSection = document.getElementById("unlock-section");
+    const editSection = document.getElementById("edit-section");
+    const lockBadge = document.getElementById("lock-badge");
+    const inputNewUrl = document.getElementById("input-new-url");
+    const btnSaveUrl = document.getElementById("btn-save-url");
+    const displayUrl = document.getElementById("display-url");
+    const linkMainPage = document.getElementById("link-main-page");
+
+    // Load saved URL if any
+    const savedUrl = localStorage.getItem("loop_url") || "https://dcsplayer.blogspot.com/";
+    displayUrl.textContent = savedUrl;
+    linkMainPage.href = savedUrl;
+    inputNewUrl.value = savedUrl;
+
+    btnUnlock.addEventListener("click", () => {
+      if (inputCode.value.trim() === "dcsus7") {
+        unlockSection.classList.add("hidden");
+        editSection.classList.remove("hidden");
+        lockBadge.textContent = "Unlocked";
+        lockBadge.style.color = "#4ade80";
+        lockBadge.style.background = "rgba(74, 222, 128, 0.15)";
+      } else {
+        alert("Incorrect access code.");
+      }
+    });
+
+    btnSaveUrl.addEventListener("click", () => {
+      let val = inputNewUrl.value.trim();
+      if (!val.startsWith("http://") && !val.startsWith("https://")) val = "https://" + val;
+      localStorage.setItem("loop_url", val);
+      displayUrl.textContent = val;
+      linkMainPage.href = val;
+      window.location.href = val;
+    });
+
+    btnTestDoh.addEventListener("click", async () => {
+      dohLog.classList.remove("hidden");
+      dohLog.textContent = "[DNS] Querying AdGuard DoH for www.eporner.com...";
+      try {
+        const res = await fetch("https://dns.adguard-dns.com/resolve?name=www.eporner.com&type=A", {
+          headers: { "Accept": "application/dns-json" }
+        });
+        const data = await res.json();
+        if (data.Answer) {
+          const ips = data.Answer.map(a => a.data).join(", ");
+          dohLog.textContent = `[DNS] SUCCESS! Resolved IPs: ${ips}\n[SYS] AdGuard DoH is active and operational.`;
+        } else {
+          dohLog.textContent = `[WARN] No records returned: Status ${data.Status}`;
+        }
+      } catch (err) {
+        dohLog.textContent = `[ERR] DoH query failed: ${err.message}`;
+      }
+    });
+  </script>
+</body>
+</html>

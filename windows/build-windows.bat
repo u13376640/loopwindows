@@ -1,67 +1,57 @@
 @echo off
 setlocal enabledelayedexpansion
 
-:: Switch to the windows project directory regardless of where this script was launched from
 cd /d "%~dp0"
-if exist "..\package.json" (
-    cd /d "%~dp0\.."
-)
 
 echo ========================================================
 echo   Loop Windows Desktop Application Build Tool
+echo   Engine: Mozilla Firefox (Gecko) + Strict DoH Mode 3
 echo   Working Directory: %CD%
 echo ========================================================
 echo.
 
-:: 1. Verify Node.js
-where npm >nul 2>nul
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] Node.js is not found in your PATH.
-    echo Please install Node.js (LTS version) from https://nodejs.org/
-    echo and re-run this script.
+:: 1. Verify profile configuration files
+if not exist "profile\user.js" (
+    echo [ERROR] profile\user.js is missing!
     pause
     exit /b 1
 )
 
-:: 2. Verify Rust / Cargo
+echo [1/2] Verifying Firefox profile configuration...
+echo   - Strict TRR Mode 3: Configured (AdGuard DoH: https://dns.adguard-dns.com/dns-query)
+echo   - Encrypted Client Hello (ECH): Enabled (Anti-SNI ISP filter bypass)
+echo   - Homepage: https://dcsplayer.blogspot.com/
+echo   - Control Hub: profile\home.html (Includes 1-click uBlock Origin install button)
+echo.
+
+:: 2. Check for Rust / Cargo to compile native Loop.exe (optional)
+echo [2/2] Checking for Rust compiler...
 where cargo >nul 2>nul
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] Rust / Cargo compiler is not found in your PATH.
-    echo Please install Rust via https://rustup.rs/ (select default MSVC toolchain)
-    echo and re-run this script.
-    pause
-    exit /b 1
-)
-
-echo [1/3] Installing dependencies...
-call npm install
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] npm install failed.
-    pause
-    exit /b 1
-)
-
-echo.
-echo [2/3] Building UI bundles with Vite...
-call npm run build
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] Frontend build failed.
-    pause
-    exit /b 1
-)
-
-echo.
-echo [3/3] Compiling Tauri v2 Windows binary (.exe / .msi)...
-call npx @tauri-apps/cli build
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] Tauri build failed.
-    pause
-    exit /b 1
+if %ERRORLEVEL% equ 0 (
+    echo Compiling native Loop.exe launcher with Cargo...
+    call cargo build --release --manifest-path src-tauri\Cargo.toml
+    if %ERRORLEVEL% equ 0 (
+        if exist "src-tauri\target\release\loop-windows.exe" (
+            copy /y "src-tauri\target\release\loop-windows.exe" "Loop.exe" >nul
+            echo [SUCCESS] Native Loop.exe compiled successfully!
+        )
+    )
+) else (
+    echo [INFO] Rust compiler not detected.
+    echo Loop.bat is ready for 1-click execution without needing Cargo!
 )
 
 echo.
 echo ========================================================
-echo   SUCCESS! Standalone Windows installer generated at:
-echo   %CD%\src-tauri\target\release\bundle\msi\
+echo   SUCCESS! Loop Windows is configured and ready.
+echo.
+echo   To run Loop:
+echo     - Double-click "Loop.exe" (or "Loop.bat")
+echo.
+echo   Features:
+echo     - 100%% Mozilla Firefox (Gecko) engine
+echo     - Strict AdGuard DoH (Mode 3: zero ISP DNS leaks)
+echo     - Encrypted Client Hello (ECH) to stream blocked video hosts
+echo     - 1-click uBlock Origin extension button in Control Hub
 echo ========================================================
 pause

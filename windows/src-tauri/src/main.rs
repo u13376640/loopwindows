@@ -1,192 +1,138 @@
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![windows_subsystem = "windows"]
 
-mod adblock;
-mod db;
+use std::env;
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 
-use adblock::AdBlockManager;
-use db::{AppSettings, DatabaseManager, ACCESS_CODE, DEFAULT_URL};
-use std::sync::Mutex;
-use tauri::{State, Window};
+const DEFAULT_URL: &str = "https://dcsplayer.blogspot.com/";
 
-struct AppState {
-    db: Mutex<DatabaseManager>,
-    adblock: AdBlockManager,
-}
-
-#[tauri::command]
-fn get_app_settings(state: State<AppState>) -> AppSettings {
-    let db = state.db.lock().unwrap();
-    db.get_all_settings()
-}
-
-#[tauri::command]
-fn verify_access_code(code: String) -> bool {
-    code.trim() == ACCESS_CODE
-}
-
-#[tauri::command]
-fn set_active_url(url: String, access_code: String, state: State<AppState>) -> Result<String, String> {
-    if access_code.trim() != ACCESS_CODE {
-        return Err("Unauthorized: Invalid access code".to_string());
+fn find_firefox_executable(app_dir: &Path) -> Option<PathBuf> {
+    // 1. Check local portable Firefox folder
+    let local_ff = app_dir.join("Firefox").join("firefox.exe");
+    if local_ff.exists() {
+        return Some(local_ff);
     }
-    let db = state.db.lock().unwrap();
-    let cleaned_url = if !url.starts_with("http://") && !url.starts_with("https://") {
-        format!("https://{}", url)
-    } else {
-        url
-    };
-    db.set_setting("active_url", &cleaned_url)
-        .map_err(|e| e.to_string())?;
-    Ok(cleaned_url)
-}
 
-#[tauri::command]
-fn reset_default_url(access_code: String, state: State<AppState>) -> Result<String, String> {
-    if access_code.trim() != ACCESS_CODE {
-        return Err("Unauthorized: Invalid access code".to_string());
+    let local_ff2 = app_dir.join("firefox").join("firefox.exe");
+    if local_ff2.exists() {
+        return Some(local_ff2);
     }
-    let db = state.db.lock().unwrap();
-    db.set_setting("active_url", DEFAULT_URL)
-        .map_err(|e| e.to_string())?;
-    Ok(DEFAULT_URL.to_string())
-}
 
-#[tauri::command]
-fn verify_password(password: String, state: State<AppState>) -> bool {
-    let db = state.db.lock().unwrap();
-    db.verify_password(&password)
-}
+    // 2. Check standard Windows installation paths
+    let standard_paths = [
+        r"C:\Program Files\Mozilla Firefox\firefox.exe",
+        r"C:\Program Files (x86)\Mozilla Firefox\firefox.exe",
+    ];
 
-#[tauri::command]
-fn set_app_password(password: String, state: State<AppState>) -> Result<(), String> {
-    let db = state.db.lock().unwrap();
-    db.set_password(&password).map_err(|e| e.to_string())
-}
-
-#[tauri::command]
-fn remove_app_password(current_password: String, state: State<AppState>) -> Result<(), String> {
-    let db = state.db.lock().unwrap();
-    if !db.verify_password(&current_password) {
-        return Err("Current password incorrect".to_string());
-    }
-    db.remove_password().map_err(|e| e.to_string())
-}
-
-#[tauri::command]
-fn toggle_setting(key: String, value: bool, state: State<AppState>) -> Result<(), String> {
-    let db = state.db.lock().unwrap();
-    db.set_setting(&key, if value { "true" } else { "false" })
-        .map_err(|e| e.to_string())
-}
-
-#[tauri::command]
-fn window_minimize(window: Window) {
-    let _ = window.minimize();
-}
-
-#[tauri::command]
-fn window_maximize_toggle(window: Window) {
-    if let Ok(is_max) = window.is_maximized() {
-        if is_max {
-            let _ = window.unmaximize();
-        } else {
-            let _ = window.maximize();
+    for path_str in &standard_paths {
+        let p = PathBuf::from(path_str);
+        if p.exists() {
+            return Some(p);
         }
     }
+
+    // 3. Check %LOCALAPPDATA%\Mozilla Firefox\firefox.exe
+    if let Ok(local_app_data) = env::var("LOCALAPPDATA") {
+        let p = PathBuf::from(local_app_data)
+            .join("Mozilla Firefox")
+            .join("firefox.exe");
+        if p.exists() {
+            return Some(p);
+        }
+    }
+
+    // 4. Check PATH environment variable
+    if let Ok(path_var) = env::var("PATH") {
+        for dir in env::split_paths(&path_var) {
+            let candidate = dir.join("firefox.exe");
+            if candidate.exists() {
+                return Some(candidate);
+            }
+        }
+    }
+
+    None
 }
 
-#[tauri::command]
-fn window_close(window: Window) {
-    let _ = window.close();
-}
+fn download_portable_firefox(app_dir: &Path) -> bool {
+    let ps_script = format!(
+        "$dest = '{}\\Firefox'; "
+        + "Write-Host 'Downloading Firefox Portable...'; "
+        + "$url = 'https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US'; "
+        + "$installer = '{}\\firefox-setup.exe'; "
+        + "Invoke-WebRequest -Uri $url -OutFile $installer; "
+        + "Start-Process -FilePath $installer -ArgumentList '/S /D=' + $dest -Wait; "
+        + "Remove-Item -Path $installer -Force -ErrorAction SilentlyContinue;",
+        app_dir.display(),
+        app_dir.display()
+    );
 
-#[tauri::command]
-fn window_start_dragging(window: Window) {
-    let _ = window.start_dragging();
-}
+    let status = Command::new("powershell")
+        .args(["-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", &ps_script])
+        .status();
 
-#[tauri::command]
-fn set_dns_config(provider: String, template: String, state: State<AppState>) -> Result<(), String> {
-    let db = state.db.lock().unwrap();
-    db.set_setting("dns_provider", &provider).map_err(|e| e.to_string())?;
-    db.set_setting("custom_dns_template", &template).map_err(|e| e.to_string())?;
-    Ok(())
-}
-
-#[tauri::command]
-fn set_proxy_config(mode: String, url: String, state: State<AppState>) -> Result<(), String> {
-    let db = state.db.lock().unwrap();
-    db.set_setting("proxy_mode", &mode).map_err(|e| e.to_string())?;
-    db.set_setting("proxy_url", &url).map_err(|e| e.to_string())?;
-    Ok(())
+    match status {
+        Ok(s) => s.success(),
+        Err(_) => false,
+    }
 }
 
 fn main() {
-    let adblock = AdBlockManager::new();
-    let mut chromium_args = adblock.get_chromium_args();
-    let db = DatabaseManager::new();
+    let current_exe = env::current_exe().unwrap_or_else(|_| PathBuf::from("."));
+    let app_dir = current_exe
+        .parent()
+        .unwrap_or_else(|| Path::new("."))
+        .to_path_buf();
 
-    // Disable X-Frame-Options and origin restrictions for embedded and top-level pages
-    chromium_args.push("--disable-web-security".to_string());
-    chromium_args.push("--disable-features=IsolateOrigins,site-per-process".to_string());
-    chromium_args.push("--allow-running-insecure-content".to_string());
+    // Check if profile directory exists next to exe or in project root
+    let mut profile_dir = app_dir.join("profile");
+    if !profile_dir.exists() {
+        let parent_profile = app_dir.join("..").join("profile");
+        if parent_profile.exists() {
+            profile_dir = parent_profile;
+        } else {
+            let _ = fs::create_dir_all(&profile_dir);
+        }
+    }
 
-    // Configure AdGuard / Custom DNS-over-HTTPS (DoH) to bypass country-level website blocks
-    let dns_provider = db.get_setting("dns_provider").unwrap_or_else(|| "adguard".to_string());
-    let custom_dns = db.get_setting("custom_dns_template").unwrap_or_else(|| "https://dns.adguard-dns.com/dns-query".to_string());
+    // Determine target URL
+    let mut target_url = DEFAULT_URL.to_string();
+    let url_file = profile_dir.join("active_url.txt");
+    if url_file.exists() {
+        if let Ok(custom) = fs::read_to_string(&url_file) {
+            let trimmed = custom.trim();
+            if !trimmed.is_empty() {
+                target_url = trimmed.to_string();
+            }
+        }
+    }
 
-    let doh_template = match dns_provider.as_str() {
-        "adguard" => Some("https://dns.adguard-dns.com/dns-query"),
-        "cloudflare" => Some("https://cloudflare-dns.com/dns-query"),
-        "google" => Some("https://dns.google/dns-query"),
-        "custom" => if !custom_dns.is_empty() { Some(custom_dns.as_str()) } else { Some("https://dns.adguard-dns.com/dns-query") },
-        "system" => None,
-        _ => Some("https://dns.adguard-dns.com/dns-query"),
+    // Find or download Firefox
+    let ff_binary = match find_firefox_executable(&app_dir) {
+        Some(bin) => bin,
+        None => {
+            // Attempt automatic download
+            download_portable_firefox(&app_dir);
+            find_firefox_executable(&app_dir).unwrap_or_else(|| {
+                // If still not found, open Mozilla download page
+                let _ = Command::new("cmd")
+                    .args(["/c", "start", "https://www.mozilla.org/firefox/"])
+                    .spawn();
+                std::process::exit(1);
+            })
+        }
     };
 
-    if let Some(template) = doh_template {
-        // Enforce strict DoH mode so Chromium NEVER leaks queries to the local ISP resolver
-        chromium_args.push("--dns-over-https-mode=secure".to_string());
-        chromium_args.push(format!("--dns-over-https-template={}", template));
-        // Enable Encrypted Client Hello (ECH) to prevent ISP SNI blocking
-        chromium_args.push("--enable-features=DnsOverHttps,EncryptedClientHello,PostQuantumKyber".to_string());
-    }
+    // Canonicalize profile path for Firefox
+    let abs_profile = fs::canonicalize(&profile_dir).unwrap_or(profile_dir);
 
-    // Configure SOCKS5 / HTTP Proxy if enabled
-    let proxy_mode = db.get_setting("proxy_mode").unwrap_or_else(|| "direct".to_string());
-    let proxy_url = db.get_setting("proxy_url").unwrap_or_default();
-    if proxy_mode != "direct" && !proxy_url.is_empty() {
-        chromium_args.push(format!("--proxy-server={}", proxy_url));
-    }
-
-    // Set Chromium command-line switches for WebView2 before creation
-    let args_str = chromium_args.join(" ");
-    std::env::set_var("WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS", &args_str);
-
-    tauri::Builder::default()
-        .manage(AppState {
-            db: Mutex::new(db),
-            adblock,
-        })
-        .invoke_handler(tauri::generate_handler![
-            get_app_settings,
-            verify_access_code,
-            set_active_url,
-            reset_default_url,
-            verify_password,
-            set_app_password,
-            remove_app_password,
-            toggle_setting,
-            window_minimize,
-            window_maximize_toggle,
-            window_close,
-            window_start_dragging,
-            set_dns_config,
-            set_proxy_config,
-        ])
-        .setup(|_app| {
-            Ok(())
-        })
-        .run(tauri::generate_context!())
-        .expect("error while running Loop Windows application");
+    // Launch Firefox in dedicated Loop profile with strict TRR Mode 3 and ECH
+    let _ = Command::new(ff_binary)
+        .arg("-no-remote")
+        .arg("-profile")
+        .arg(abs_profile)
+        .arg("-new-window")
+        .arg(target_url)
+        .spawn();
 }
