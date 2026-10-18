@@ -1,6 +1,6 @@
 {
-  "summary": "Implementation plan to fix DoH enforcement in WebView2 with strict secure mode and ECH, provide the standalone Firefox Portable engine runner with native uBlock Origin and TRR mode 3, and add proxy tunnel support to completely bypass ISP filtering.",
-  "updatedAt": "2026-10-18T14:22:41.841424560Z",
+  "summary": "Implementation plan to keep Loop's custom window and toolbar interface while integrating the Firefox (Gecko) engine directly into the viewport, enabling manual installation of custom add-ons from addons.mozilla.org, and enforcing strict TRR Mode 3 and ECH to bypass ISP blocking.",
+  "updatedAt": "2026-10-18T15:07:27.762124114Z",
   "requestFeedback": true,
   "userFacing": true
 }

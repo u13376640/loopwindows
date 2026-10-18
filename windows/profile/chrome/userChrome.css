@@ -1,0 +1,38 @@
+/* Loop Windows - Custom Firefox App Window Styling */
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+:root {
+  --toolbar-bgcolor: #1e1e1e !important;
+  --toolbar-color: #f3f3f3 !important;
+  --tab-selected-bgcolor: #2d2d30 !important;
+}
+
+/* Dark mode window background */
+#main-window {
+  background-color: #1e1e1e !important;
+}
+
+/* Sleek Minimal Header Bar */
+#nav-bar {
+  background: rgba(26, 26, 26, 0.95) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+/* Custom button hover */
+.toolbarbutton-1:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 4px !important;
+}
+
+/* Clean URL bar */
+#urlbar-background {
+  background: rgba(0, 0, 0, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 6px !important;
+}
+
+/* Hide Pocket and telemetry clutter */
+#pocket-button-box, #identity-permission-box {
+  display: none !important;
+}

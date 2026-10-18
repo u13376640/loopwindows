@@ -115,6 +115,7 @@ const btnBack = document.getElementById("btn-back");
 const btnForward = document.getElementById("btn-forward");
 const btnReload = document.getElementById("btn-reload");
 const btnHome = document.getElementById("btn-home");
+const btnAddons = document.getElementById("btn-addons");
 const btnDirectView = document.getElementById("btn-direct-view");
 const btnDiagnostics = document.getElementById("btn-diagnostics");
 const btnSettings = document.getElementById("btn-settings");
@@ -284,6 +285,11 @@ btnHome?.addEventListener("click", () => {
 
 btnDirectView?.addEventListener("click", () => {
   navigate(currentActiveUrl, true);
+});
+
+btnAddons?.addEventListener("click", () => {
+  Logger.log("SYS", "Navigating to addons.mozilla.org (uBlock Origin). Click 'Add to Firefox' to install.", "success");
+  navigate("https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/");
 });
 
 // Warning Banner Actions
