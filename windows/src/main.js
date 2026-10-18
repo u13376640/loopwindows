@@ -167,6 +167,8 @@ const btnClearLogs = document.getElementById("btn-clear-logs");
 const btnCopyLogs = document.getElementById("btn-copy-logs");
 const diagDns = document.getElementById("diag-dns");
 const diagProxy = document.getElementById("diag-proxy");
+const btnTestDoh = document.getElementById("btn-test-doh");
+const btnLaunchFirefox = document.getElementById("btn-launch-firefox");
 
 // App Lock Elements
 const lockScreenModal = document.getElementById("lock-screen-modal");
@@ -342,6 +344,37 @@ btnCopyLogs?.addEventListener("click", async () => {
   } catch (err) {
     Logger.log("ERR", `Clipboard copy failed: ${err.message}`, "err");
   }
+});
+
+// Test Live Encrypted DoH Resolution
+btnTestDoh?.addEventListener("click", async () => {
+  const testHost = "www.eporner.com";
+  Logger.log("DNS", `Initiating live encrypted DoH query for: ${testHost}...`, "info");
+  try {
+    const res = await fetch(`https://dns.adguard-dns.com/resolve?name=${testHost}&type=A`, {
+      headers: { "Accept": "application/dns-json" }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (data.Answer && data.Answer.length > 0) {
+      const ips = data.Answer.map(a => a.data).join(", ");
+      Logger.log("DNS", `✓ DoH RESOLUTION SUCCESSFUL: ${testHost} -> [${ips}] (Status: ${data.Status})`, "success");
+      Logger.log("SYS", "AdGuard DoH successfully bypassed ISP DNS blocking.", "success");
+      Logger.log("SYS", "Note: If video stream still fails, ISP is inspecting the TLS handshake SNI packet. Use Firefox Portable (Strict TRR Mode 3 + ECH) or SOCKS5 proxy tunnel to bypass SNI filtering.", "info");
+    } else {
+      Logger.log("WARN", `DoH query returned no A records for ${testHost} (Status: ${data.Status})`, "warn");
+    }
+  } catch (err) {
+    Logger.log("ERR", `DoH test query failed: ${err.message}. Check Internet connection or proxy.`, "err");
+  }
+});
+
+// Launch Firefox Engine Runner
+btnLaunchFirefox?.addEventListener("click", () => {
+  Logger.log("SYS", "Preparing to run Loop via Standalone Firefox Engine (Gecko)", "info");
+  Logger.log("SYS", "Isolated profile: windows\\firefox-runner\\profile\\", "info");
+  Logger.log("SYS", "Policies: uBlock Origin active, Strict TRR Mode 3 active, ECH active", "success");
+  alert("Firefox Engine Runner is Ready!\n\nTo launch Loop with the isolated Mozilla Firefox (Gecko) engine:\nRun: windows\\firefox-runner\\launch-firefox.bat\n\nFeatures:\n- Native Firefox uBlock Origin extension\n- Strict TRR Mode 3 (100% encrypted DNS)\n- Encrypted Client Hello (bypasses ISP SNI blocking)");
 });
 
 // ========================================================

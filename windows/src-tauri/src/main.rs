@@ -145,8 +145,11 @@ fn main() {
     };
 
     if let Some(template) = doh_template {
-        chromium_args.push("--enable-features=DnsOverHttps".to_string());
+        // Enforce strict DoH mode so Chromium NEVER leaks queries to the local ISP resolver
+        chromium_args.push("--dns-over-https-mode=secure".to_string());
         chromium_args.push(format!("--dns-over-https-template={}", template));
+        // Enable Encrypted Client Hello (ECH) to prevent ISP SNI blocking
+        chromium_args.push("--enable-features=DnsOverHttps,EncryptedClientHello,PostQuantumKyber".to_string());
     }
 
     // Configure SOCKS5 / HTTP Proxy if enabled

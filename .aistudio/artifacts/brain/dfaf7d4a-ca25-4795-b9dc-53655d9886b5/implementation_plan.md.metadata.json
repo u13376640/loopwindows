@@ -1,6 +1,6 @@
 {
-  "summary": "Plan to eliminate duplicate window controls, implement direct top-level webview navigation to bypass iframe restrictions, and add a comprehensive diagnostic console & system log to inspect network and DNS errors.",
-  "updatedAt": "2026-10-18T13:12:56.422595473Z",
+  "summary": "Implementation plan to fix DoH enforcement in WebView2 with strict secure mode and ECH, provide the standalone Firefox Portable engine runner with native uBlock Origin and TRR mode 3, and add proxy tunnel support to completely bypass ISP filtering.",
+  "updatedAt": "2026-10-18T14:22:41.841424560Z",
   "requestFeedback": true,
   "userFacing": true
 }
