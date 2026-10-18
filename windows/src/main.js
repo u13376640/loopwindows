@@ -1,25 +1,18 @@
 // Loop Windows Desktop Client Controller
-import { invoke } from '@tauri-apps/api/core';
-import { getCurrentWindow } from '@tauri-apps/api/window';
-
 const DEFAULT_URL = "https://dcsplayer.blogspot.com/";
 
-// Initialize Window Instance
-let appWindow = null;
-try {
-  appWindow = getCurrentWindow();
-} catch (e) {
-  console.warn("Tauri Window API not available (web preview mode):", e);
-}
+// Initialize Window Instance if running inside Tauri host, otherwise null
+const appWindow = (typeof window !== "undefined" && window.__TAURI__?.window?.getCurrentWindow) 
+  ? window.__TAURI__.window.getCurrentWindow() 
+  : null;
 
-// Safe Invocation Wrapper (Tauri Core with local fallback)
+// Safe Invocation Wrapper (Local storage persistence with dynamic host fallback)
 const safeInvoke = async (cmd, args = {}) => {
-  try {
-    return await invoke(cmd, args);
-  } catch (err) {
-    if (window.__TAURI__?.core?.invoke) {
+  if (typeof window !== "undefined" && window.__TAURI__?.core?.invoke) {
+    try {
       return await window.__TAURI__.core.invoke(cmd, args);
-    }
+    } catch (_) {}
+  }
     console.log(`[Preview Fallback] ${cmd}:`, args);
     if (cmd === "get_app_settings") {
       return {
@@ -56,7 +49,6 @@ const safeInvoke = async (cmd, args = {}) => {
       return true;
     }
     return null;
-  }
 };
 
 // ========================================================
