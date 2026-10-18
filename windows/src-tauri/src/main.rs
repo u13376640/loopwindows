@@ -56,16 +56,19 @@ fn find_firefox_executable(app_dir: &Path) -> Option<PathBuf> {
 }
 
 fn download_portable_firefox(app_dir: &Path) -> bool {
+    let dest_path = app_dir.join("Firefox");
+    let installer_path = app_dir.join("firefox-setup.exe");
+
     let ps_script = format!(
-        "$dest = '{}\\Firefox'; "
-        + "Write-Host 'Downloading Firefox Portable...'; "
-        + "$url = 'https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US'; "
-        + "$installer = '{}\\firefox-setup.exe'; "
-        + "Invoke-WebRequest -Uri $url -OutFile $installer; "
-        + "Start-Process -FilePath $installer -ArgumentList '/S /D=' + $dest -Wait; "
-        + "Remove-Item -Path $installer -Force -ErrorAction SilentlyContinue;",
-        app_dir.display(),
-        app_dir.display()
+        "$dest = '{dest}'; \
+         Write-Host 'Downloading Firefox Portable...'; \
+         $url = 'https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US'; \
+         $installer = '{installer}'; \
+         Invoke-WebRequest -Uri $url -OutFile $installer; \
+         Start-Process -FilePath $installer -ArgumentList '/S /D=' + $dest -Wait; \
+         Remove-Item -Path $installer -Force -ErrorAction SilentlyContinue;",
+        dest = dest_path.display(),
+        installer = installer_path.display()
     );
 
     let status = Command::new("powershell")
