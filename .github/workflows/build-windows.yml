@@ -40,16 +40,26 @@ jobs:
           npm install
           npm run build
 
-      - name: Compile Standalone Windows Application
-        working-directory: windows
-        run: npx @tauri-apps/cli build
+      - name: Compile Native Windows Executable (Cargo)
+        working-directory: windows/src-tauri
+        run: cargo build --release
 
-      - name: Upload Windows Installers (.msi and .exe)
+      - name: Assemble Windows App Bundle
+        working-directory: windows
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist-package
+          Copy-Item src-tauri\target\release\loop-windows.exe dist-package\Loop.exe
+          Copy-Item Loop.bat dist-package\Loop.bat
+          Copy-Item README.md dist-package\README.md
+          Copy-Item -Recurse profile dist-package\profile
+          Compress-Archive -Path dist-package\* -DestinationPath Loop-Windows-Firefox.zip -Force
+
+      - name: Upload Windows Executables & Package
         uses: actions/upload-artifact@v4
         with:
-          name: loop-windows-binaries
+          name: loop-windows-firefox
           path: |
-            windows/src-tauri/target/release/bundle/msi/*.msi
-            windows/src-tauri/target/release/bundle/nsis/*.exe
-            windows/src-tauri/target/release/*.exe
-          if-no-files-found: warn
+            windows/Loop-Windows-Firefox.zip
+            windows/src-tauri/target/release/loop-windows.exe
+          if-no-files-found: error
