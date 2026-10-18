@@ -1,6 +1,6 @@
 {
-  "summary": "Implementation plan to switch Loop Windows to a native top-level webview (eliminating iframe X-Frame-Options restrictions) and add SOCKS5 / HTTP proxy configuration in Settings to bypass ISP and country-level firewalls.",
-  "updatedAt": "2026-10-17T20:31:16.051764750Z",
+  "summary": "Plan to eliminate duplicate window controls, implement direct top-level webview navigation to bypass iframe restrictions, and add a comprehensive diagnostic console & system log to inspect network and DNS errors.",
+  "updatedAt": "2026-10-18T13:12:56.422595473Z",
   "requestFeedback": true,
   "userFacing": true
 }

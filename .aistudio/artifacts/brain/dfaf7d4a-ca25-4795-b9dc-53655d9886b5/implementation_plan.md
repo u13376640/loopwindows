@@ -1,51 +1,50 @@
-# Loop Windows: Native Webview & Proxy Architecture Plan
+# Loop Windows: Window Controls Fix, Top-Level Navigation & System Log
 
-Eliminates `X-Frame-Options` and CSP load errors by migrating from an embedded `<iframe>` to a native top-level Webview, and adds full SOCKS5/HTTP proxy support to bypass country-level ISP firewalls and SNI filtering.
+Fixes the double window controls bug, eliminates iframe loading restrictions via direct top-level navigation, and introduces an integrated System Log and Diagnostic Console.
 
 ## User Review & Critical Decisions
 
 > [!IMPORTANT]
-> The architectural updates below directly resolve the load failures and country-level censorship blocks:
->
-> 1. **Native Top-Level Webview (Eliminates `X-Frame-Options`)**:
->    - **Problem**: Modern sites (including blogspot, streaming players, banking, and secured portals) send `X-Frame-Options: SAMEORIGIN` or `frame-ancestors: 'self'`. When loaded inside an `<iframe>`, Chromium/WebView2 blocks them and shows the "webpage might be having issues" error.
->    - **Solution**: Load the website directly as the top-level document in WebView2. This gives the site full native browser privileges with zero iframe restrictions, zero cookie sandboxing, and full DRM/player compatibility.
-> 2. **SOCKS5 & HTTP Proxy Support in Settings**:
->    - **Problem**: Many countries use Deep Packet Inspection (DPI) to block domains at the TLS SNI (Server Name Indication) or IP level. In these regions, DNS-over-HTTPS alone cannot connect.
->    - **Solution**: Add configurable Proxy / SOCKS5 tunneling (`socks5://`, `http://`, `https://`) in Settings. Users can easily route their traffic through local proxy clients (such as Shadowsocks, V2Ray, Clash, Cloudflare WARP, or Psiphon) or remote proxy servers.
-> 3. **Native Window Management**:
->    - Enable native Windows decorations with Mica/Acrylic so Windows natively handles drag, snap layouts, minimize, maximize, and exit controls seamlessly without interference from web content.
+> 1. **Removal of Redundant HTML Window Controls**:
+>    - **Root Cause**: `tauri.conf.json` had `"decorations": true` enabled (native Windows 11 title bar), while `index.html` was still rendering custom HTML caption buttons (`_`, `□`, `✕`), resulting in two sets of window controls.
+>    - **Fix**: Remove the custom HTML caption buttons. Windows 11 natively provides the standard minimize, maximize, snap layouts, and close buttons on the OS title bar.
+> 2. **Eliminating Website Load Failures via Direct Top-Level Navigation**:
+>    - **Root Cause**: Websites that prohibit framing (e.g., Blogspot, streaming players, Google authentication) refuse to load inside `<iframe>` tags regardless of flags.
+>    - **Fix**: Support direct top-level webview navigation (exactly matching Android's `WebView.loadUrl(url)`), completely removing the `<iframe>` constraint so all websites render with full desktop privileges.
+> 3. **Integrated System Log & Diagnostic Console**:
+>    - Provide a real-time Diagnostics panel in Settings (and via shortcut `Ctrl+Shift+L` or `F12`) displaying:
+>      - Active DoH resolver (`https://dns.adguard-dns.com/dns-query`) and status
+>      - Proxy configuration (`direct`, `socks5://...`, or `http://...`)
+>      - Chromium network events, HTTP status codes, and error codes (`ERR_NAME_NOT_RESOLVED`, `ERR_CONNECTION_REFUSED`, etc.)
+>      - One-click "Switch to Top-Level Native View" if an iframe ever encounters an error.
 
 ---
 
 ## 1. Overview & Core Concept
 
-- **What It Delivers**: A completely uninhibited Windows browsing client where any webpage loads reliably regardless of iframe security policies or regional ISP blocking.
-- **Target Use Case**: Users accessing restricted, geo-blocked, or security-hardened websites that fail in ordinary embedded frame browsers.
-- **Key Advantage**: Combines direct uBlock Origin extension filtering with full SOCKS5 proxy tunneling and native WebView rendering.
+- **What It Does**: Cleans up the desktop interface to look and feel like a native Windows 11 app without visual glitches, ensures 100% webpage compatibility, and provides transparency into network/DNS health through live diagnostic logging.
+- **Key Value**: Users can immediately identify why a website might be failing (DNS failure vs. ISP block vs. certificate error) and resolve it instantly with DoH or SOCKS5 proxies.
 
 ---
 
 ## 2. User Experience & Visual Design
 
 ### Key User Flows
-1. **Web Viewing**: The website renders directly full-frame in the application window. No `X-Frame-Options` or iframe blocking errors can occur.
-2. **Accessing Settings & Security**:
-   - Pressing `Ctrl+,` (or `F1` / clicking the floating access button) brings up the sleek Loop Settings drawer over the active page.
-   - Users can update the Main Page URL (unlocked via `dcsus7`), change DNS resolvers, or configure SOCKS5/HTTP proxies.
-3. **Configuring SOCKS5 / HTTP Proxy**:
-   - Inside Settings, a new **"Proxy & Firewall Bypass"** card provides options for:
-     - **Direct Connection** (Default / No Proxy)
-     - **SOCKS5 Proxy** (e.g., `127.0.0.1:1080` for Shadowsocks/V2Ray/WARP)
-     - **HTTP / HTTPS Proxy** (e.g., `proxy.mycompany.com:8080`)
-     - **Bypass List** (`<local>, 127.0.0.1, localhost`)
-   - Saves instantly to the SQLite database and updates the WebView2 proxy switches.
+1. **Window Experience**:
+   - Single, clean native Windows 11 title bar with standard OS caption buttons and Snap Layout support.
+   - Loop controls (Back, Forward, Reload, Home, uBlock shield, Settings gear) are neatly positioned in the header bar.
+2. **Accessing Diagnostics & System Log**:
+   - Open Settings (`Ctrl+,` or click gear icon).
+   - Click the **"Diagnostics & System Log"** card to open the live console.
+   - Shows active browser switches, DoH endpoints, proxy status, and a scrolling event log with timestamps.
+3. **Seamless Site Loading**:
+   - If a website blocks framing, Loop automatically logs the error and provides a one-click button to load it directly in the top-level native webview.
 
 ---
 
-## 3. Technical Architecture & Component Mapping
+## 3. Technical Implementation Strategy
 
-### System Diagram
+### Component Diagram
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
@@ -53,35 +52,30 @@ Eliminates `X-Frame-Options` and CSP load errors by migrating from an embedded `
 ├──────────────────────────────────────────────────────────────────┤
 │                                                                  │
 │  ┌─────────────────────────┐        ┌─────────────────────────┐  │
-│  │     Rust Host Core      │◄──────►│   SQLite Local Storage  │  │
-│  │ (Tauri v2 + WebView2)   │        │ (Proxy, URL, Passwords) │  │
-│  └───────────┬─────────────┘        └─────────────────────────┘  │
-│              │                                                   │
-│              ▼                                                   │
+│  │   Loop Header Controls  │        │   Diagnostic Console    │  │
+│  │   (Back, Reload, Home,  │        │   (Live Network & DNS   │  │
+│  │    uBlock, Settings)    │        │    System Event Logs)   │  │
+│  └───────────┬─────────────┘        └────────────┬────────────┘  │
+│              │                                   │               │
+│              ▼                                   ▼               │
 │  ┌────────────────────────────────────────────────────────────┐  │
-│  │                Top-Level WebView2 Runtime                  │  │
-│  │  ┌──────────────────────────────────────────────────────┐  │  │
-│  │  │ Native Top-Level Page (Zero iframe restrictions)     │  │  │
-│  │  │ - uBlock Origin Active                               │  │  │
-│  │  │ - AdGuard DoH DNS Resolver                           │  │  │
-│  │  │ - SOCKS5 / HTTP Tunnel Active                        │  │  │
-│  │  └──────────────────────────────────────────────────────┘  │  │
-│  │  ┌──────────────────────────────────────────────────────┐  │  │
-│  │  │ Injected Loop Controls & Overlay HUD (Ctrl+,)        │  │  │
-│  │  └──────────────────────────────────────────────────────┘  │  │
+│  │             Windows WebView2 Runtime Engine                │  │
+│  │  - Native Windows 11 OS Controls (decorations: true)       │  │
+│  │  - Top-Level Document Navigation (Zero iframe limits)      │  │
+│  │  - Encrypted AdGuard DoH DNS Resolver                      │  │
+│  │  - SOCKS5 / HTTP Proxy Tunneling                           │  │
 │  └────────────────────────────────────────────────────────────┘  │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-### Key Technical Changes
-
-1. **`windows/src-tauri/src/main.rs` & `adblock.rs`**:
-   - Ingest `proxy_mode`, `proxy_host`, `proxy_port`, and `proxy_bypass` from `DatabaseManager`.
-   - Append `--proxy-server=<protocol>://<host>:<port>` and `--proxy-bypass-list=<list>` to `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS`.
-   - Add IPC command `set_proxy_config(mode, host, port, bypass)`.
-2. **`windows/src-tauri/tauri.conf.json`**:
-   - Set `"decorations": true` for native Windows 11 Fluent titlebar and drag-snap behavior, avoiding custom titlebar bugs while providing full native window controls.
-   - Configure `--disable-web-security` and `--disable-features=IsolateOrigins,site-per-process` as additional safeguards.
-3. **Settings UI (`windows/index.html` & `windows/src/main.js`)**:
-   - Add the dedicated **Proxy & Firewall Bypass** card with SOCKS5 / HTTP toggles, host/port inputs, and test status indicators.
-   - Update navigation logic to load directly in top-level webview.
+### Specific Changes
+1. **`windows/index.html` & `windows/src/index.html`**:
+   - Remove `<div class="window-controls">` and its caption buttons.
+   - Add the **Diagnostics & System Log** panel and modal dialog with real-time log stream.
+   - Add a fallback mechanism for direct top-level navigation.
+2. **`windows/src/style.css`**:
+   - Remove custom caption button styling to prevent visual duplication.
+   - Style the dark-themed diagnostic console (monospaced logs, colored status chips, auto-scrolling).
+3. **`windows/src/main.js`**:
+   - Implement `Logger` service capturing all navigation events, DNS status, and network errors.
+   - Wire diagnostic console triggers and export log functionality.
