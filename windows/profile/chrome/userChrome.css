@@ -1,38 +1,126 @@
 /* Loop Windows - Custom Firefox App Window Styling */
+/* Removes Firefox URL bar, tab bar, and browser chrome for a clean native app view */
 @namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
 :root {
-  --toolbar-bgcolor: #1e1e1e !important;
-  --toolbar-color: #f3f3f3 !important;
-  --tab-selected-bgcolor: #2d2d30 !important;
+  --toolbar-bgcolor: #18181b !important;
+  --toolbar-color: #f4f4f5 !important;
+  --arrowpanel-background: #242427 !important;
+  --arrowpanel-color: #f4f4f5 !important;
+  --arrowpanel-border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
-/* Dark mode window background */
-#main-window {
-  background-color: #1e1e1e !important;
+/* 1. Dark app window background */
+#main-window,
+#browser,
+#appcontent,
+browser[type="content"] {
+  background-color: #121214 !important;
 }
 
-/* Sleek Minimal Header Bar */
-#nav-bar {
-  background: rgba(26, 26, 26, 0.95) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: none !important;
+/* 2. Completely Hide Tabs Toolbar (Matches Android Edge-to-Edge) */
+#TabsToolbar {
+  visibility: collapse !important;
+  margin-bottom: 0 !important;
+  min-height: 0 !important;
+  height: 0 !important;
 }
 
-/* Custom button hover */
-.toolbarbutton-1:hover {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-radius: 4px !important;
-}
-
-/* Clean URL bar */
-#urlbar-background {
-  background: rgba(0, 0, 0, 0.3) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 6px !important;
-}
-
-/* Hide Pocket and telemetry clutter */
-#pocket-button-box, #identity-permission-box {
+#tabbrowser-tabs,
+#alltabs-button,
+#firefox-view-button,
+.titlebar-spacer,
+#titlebar-spacer {
   display: none !important;
+}
+
+/* 3. Completely Hide URL Bar & Search UI */
+#urlbar-container,
+#search-container,
+#urlbar,
+#urlbar-background,
+#identity-box,
+#tracking-protection-icon-container,
+#page-action-buttons,
+#star-button-box,
+#pocket-button-box {
+  display: none !important;
+}
+
+/* 4. Hide Bookmarks & Menubar toolbars */
+#PersonalToolbar,
+#toolbar-menubar {
+  visibility: collapse !important;
+}
+
+/* 5. Minimal Floating Action Pill in Top Corner */
+/* Replaces the heavy browser URL bar with a lightweight, floating pill for Add-ons & Navigation */
+#nav-bar {
+  position: fixed !important;
+  top: 14px !important;
+  right: 18px !important;
+  z-index: 2147483647 !important;
+  background: rgba(24, 24, 27, 0.82) !important;
+  backdrop-filter: blur(16px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 9999px !important;
+  padding: 3px 8px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  max-height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  opacity: 0.3 !important;
+  transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+#nav-bar:hover,
+#nav-bar:focus-within {
+  opacity: 1 !important;
+  transform: translateY(1px) scale(1.02) !important;
+}
+
+/* Style buttons inside floating action pill */
+#back-button,
+#forward-button,
+#stop-reload-button,
+#home-button,
+#unified-extensions-button,
+#PanelUI-button {
+  margin: 0 1px !important;
+  padding: 4px !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: #f4f4f5 !important;
+  fill: #f4f4f5 !important;
+  transition: background 0.15s ease !important;
+}
+
+#back-button:hover,
+#forward-button:hover,
+#stop-reload-button:hover,
+#home-button:hover,
+#unified-extensions-button:hover,
+#PanelUI-button:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* Hide overflow and spacer clutter inside floating pill */
+#nav-bar-overflow-button,
+#customizableui-special-spring1,
+#customizableui-special-spring2,
+#nav-bar-spacer {
+  display: none !important;
+}
+
+/* Web content area occupies 100% full screen */
+#content,
+#appcontent,
+#tabbrowser-tabpanels {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
 }

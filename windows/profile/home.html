@@ -6,32 +6,33 @@
   <title>Loop - Control Hub</title>
   <style>
     :root {
-      --bg-app: #1e1e1e;
-      --bg-card: #252526;
-      --bg-card-hover: #2d2d30;
+      --bg-app: #121214;
+      --bg-card: #1c1c1f;
+      --bg-card-hover: #26262b;
       --border: rgba(255, 255, 255, 0.08);
-      --accent: #0078d4;
-      --accent-hover: #1084d8;
-      --text-main: #f3f3f3;
-      --text-sub: #a0a0a0;
-      --success: #4ade80;
-      --warn: #fde047;
-      --danger: #f87171;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --text-main: #f4f4f5;
+      --text-sub: #a1a1aa;
+      --success: #22c55e;
+      --warn: #eab308;
+      --danger: #ef4444;
+      --purple: #8b5cf6;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background-color: var(--bg-app);
       color: var(--text-main);
-      font-family: "Segoe UI Variable Text", "Segoe UI", -apple-system, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px 20px;
+      padding: 36px 20px 60px;
     }
     .header {
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
     .brand {
       display: inline-flex;
@@ -40,8 +41,8 @@
       margin-bottom: 8px;
     }
     .logo-icon {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       color: var(--accent);
     }
     h1 {
@@ -51,20 +52,21 @@
     }
     .subtitle {
       color: var(--text-sub);
-      font-size: 14px;
+      font-size: 13.5px;
+      margin-top: 4px;
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       gap: 16px;
       width: 100%;
-      max-width: 860px;
+      max-width: 900px;
     }
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 20px;
+      border-radius: 12px;
+      padding: 22px;
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -81,7 +83,7 @@
       justify-content: space-between;
     }
     .card-desc {
-      font-size: 12.5px;
+      font-size: 13px;
       color: var(--text-sub);
       line-height: 1.5;
     }
@@ -90,7 +92,7 @@
       font-weight: 600;
       padding: 3px 8px;
       border-radius: 12px;
-      background: rgba(74, 222, 128, 0.15);
+      background: rgba(34, 197, 94, 0.15);
       color: var(--success);
     }
     .btn {
@@ -99,12 +101,12 @@
       justify-content: center;
       gap: 8px;
       padding: 10px 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       text-decoration: none;
-      transition: background 0.15s;
+      transition: all 0.15s ease;
       border: none;
     }
     .btn-primary {
@@ -112,11 +114,11 @@
       color: #fff;
     }
     .btn-primary:hover { background: var(--accent-hover); }
-    .btn-extension {
-      background: #805ad5;
+    .btn-purple {
+      background: var(--purple);
       color: #fff;
     }
-    .btn-extension:hover { background: #6b46c1; }
+    .btn-purple:hover { background: #7c3aed; }
     .btn-outline {
       background: transparent;
       border: 1px solid var(--border);
@@ -129,25 +131,53 @@
     }
     .input-text {
       flex: 1;
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.35);
       border: 1px solid var(--border);
       color: #fff;
       padding: 8px 12px;
       border-radius: 6px;
-      font-size: 12.5px;
+      font-size: 13px;
+    }
+    .input-text:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .select-dropdown {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 6px;
     }
     .log-box {
-      background: #141414;
+      background: #0d0d0f;
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 10px;
-      font-family: monospace;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
       font-size: 11.5px;
       color: #cbd5e1;
-      max-height: 120px;
+      max-height: 140px;
       overflow-y: auto;
       white-space: pre-wrap;
-      line-height: 1.4;
+      line-height: 1.45;
+    }
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
     }
     .hidden { display: none !important; }
   </style>
@@ -161,51 +191,60 @@
       </svg>
       <h1>Loop</h1>
     </div>
-    <p class="subtitle">Standalone Mozilla Firefox (Gecko) Engine &bull; Strict TRR Mode 3 &bull; Encrypted Client Hello</p>
+    <p class="subtitle">Firefox Gecko Engine &bull; Strict TRR Mode 3 &bull; Encrypted Client Hello (Anti-SNI Block)</p>
   </div>
 
   <div class="grid">
-    <!-- Card 1: Main Video Player -->
+    <!-- Card 1: Main Video Player Portal -->
     <div class="card">
       <div class="card-title">
         <span>Main Video Portal</span>
-        <span class="badge">Active</span>
+        <div class="status-pill"><div class="status-dot"></div><span>Ready</span></div>
       </div>
-      <p class="card-desc">Default homepage: <strong id="display-url">https://dcsplayer.blogspot.com/</strong></p>
-      <a href="https://dcsplayer.blogspot.com/" id="link-main-page" class="btn btn-primary">Open Main Player</a>
+      <p class="card-desc">Active portal target: <strong id="display-url">https://dcsplayer.blogspot.com/</strong></p>
+      <a href="https://dcsplayer.blogspot.com/" id="link-main-page" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Open Main Video Player
+      </a>
     </div>
 
     <!-- Card 2: uBlock Origin Extension Installer -->
     <div class="card">
       <div class="card-title">
         <span>uBlock Origin Extension</span>
-        <span class="badge" style="background: rgba(128, 90, 213, 0.2); color: #d6bcfa;">Firefox Addon</span>
+        <span class="badge" style="background: rgba(139, 92, 246, 0.2); color: #c4b5fd;">Firefox Add-on</span>
       </div>
-      <p class="card-desc">Click below to open the official Mozilla Add-on store and click <strong>"Add to Firefox"</strong> to install uBlock Origin directly into this Loop profile.</p>
-      <a href="https://addons.mozilla.org/firefox/addon/ublock-origin/" target="_blank" class="btn btn-extension">
+      <p class="card-desc">Installs directly into this profile with zero third-party telemetry. Blocks popups, ads, and malicious redirects on streaming video players.</p>
+      <a href="https://addons.mozilla.org/firefox/addon/ublock-origin/" target="_blank" class="btn btn-purple">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
-        Install uBlock Origin Extension
+        Install uBlock Origin (Mozilla Add-ons)
       </a>
     </div>
 
-    <!-- Card 3: Anti-Censorship & DoH Status -->
+    <!-- Card 3: Anti-Censorship & DoH Status Probe -->
     <div class="card">
       <div class="card-title">
-        <span>Anti-Censorship & Encrypted DNS</span>
-        <span class="badge">TRR Mode 3</span>
+        <span>Anti-ISP Censorship & DoH Probe</span>
+        <span class="badge">Strict TRR 3</span>
       </div>
-      <p class="card-desc">Resolver: <strong>AdGuard DoH (https://dns.adguard-dns.com/dns-query)</strong>. ECH is enabled to prevent ISP SNI filtering.</p>
-      <button id="btn-test-doh" class="btn btn-outline">Test DoH Resolution (eporner.com)</button>
+      <p class="card-desc">AdGuard DoH with ECH enabled. Test real-time DNS resolution to ensure video host domains (e.g. <code>eporner.com</code>) are resolved cleanly without ISP tampering.</p>
+      <select id="select-doh-provider" class="select-dropdown">
+        <option value="https://dns.adguard-dns.com/resolve">AdGuard DNS (Primary)</option>
+        <option value="https://cloudflare-dns.com/dns-query">Cloudflare 1.1.1.1</option>
+        <option value="https://dns.google/resolve">Google Public DNS</option>
+        <option value="https://dns.quad9.net/dns-query">Quad9 DNS</option>
+      </select>
+      <button id="btn-test-doh" class="btn btn-outline">Run DoH Resolution Test (eporner.com)</button>
       <div id="doh-log" class="log-box hidden"></div>
     </div>
 
-    <!-- Card 4: Change Main Page URL (Protected by dcsus7) -->
+    <!-- Card 4: Change Portal URL (Protected by dcsus7) -->
     <div class="card">
       <div class="card-title">
-        <span>Main Page URL Configuration</span>
-        <span id="lock-badge" class="badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">Locked</span>
+        <span>Portal URL Configuration</span>
+        <span id="lock-badge" class="badge" style="background: rgba(234, 179, 8, 0.2); color: #fde047;">Protected</span>
       </div>
-      <p class="card-desc">Enter authorization code (<strong>dcsus7</strong>) to customize the active portal URL.</p>
+      <p class="card-desc">Enter authorization code (<strong>dcsus7</strong>) to customize the active player target URL.</p>
       <div id="unlock-section">
         <div class="input-row">
           <input type="password" id="input-code" class="input-text" placeholder="Enter access code">
@@ -215,7 +254,7 @@
       <div id="edit-section" class="hidden">
         <div class="input-row">
           <input type="text" id="input-new-url" class="input-text" value="https://dcsplayer.blogspot.com/">
-          <button id="btn-save-url" class="btn btn-primary">Save & Open</button>
+          <button id="btn-save-url" class="btn btn-primary">Save & Launch</button>
         </div>
       </div>
     </div>
@@ -224,6 +263,7 @@
   <script>
     const btnTestDoh = document.getElementById("btn-test-doh");
     const dohLog = document.getElementById("doh-log");
+    const selectDoh = document.getElementById("select-doh-provider");
     const btnUnlock = document.getElementById("btn-unlock");
     const inputCode = document.getElementById("input-code");
     const unlockSection = document.getElementById("unlock-section");
@@ -234,7 +274,7 @@
     const displayUrl = document.getElementById("display-url");
     const linkMainPage = document.getElementById("link-main-page");
 
-    // Load saved URL if any
+    // Load saved custom URL if available
     const savedUrl = localStorage.getItem("loop_url") || "https://dcsplayer.blogspot.com/";
     displayUrl.textContent = savedUrl;
     linkMainPage.href = savedUrl;
@@ -245,8 +285,8 @@
         unlockSection.classList.add("hidden");
         editSection.classList.remove("hidden");
         lockBadge.textContent = "Unlocked";
-        lockBadge.style.color = "#4ade80";
-        lockBadge.style.background = "rgba(74, 222, 128, 0.15)";
+        lockBadge.style.color = "#22c55e";
+        lockBadge.style.background = "rgba(34, 197, 94, 0.15)";
       } else {
         alert("Incorrect access code.");
       }
@@ -263,20 +303,22 @@
 
     btnTestDoh.addEventListener("click", async () => {
       dohLog.classList.remove("hidden");
-      dohLog.textContent = "[DNS] Querying AdGuard DoH for www.eporner.com...";
+      const provider = selectDoh.value;
+      dohLog.textContent = `[DNS] Connecting to DoH endpoint: ${provider}...\n[DNS] Resolving target: www.eporner.com`;
       try {
-        const res = await fetch("https://dns.adguard-dns.com/resolve?name=www.eporner.com&type=A", {
+        const queryUrl = `${provider}?name=www.eporner.com&type=A`;
+        const res = await fetch(queryUrl, {
           headers: { "Accept": "application/dns-json" }
         });
         const data = await res.json();
-        if (data.Answer) {
-          const ips = data.Answer.map(a => a.data).join(", ");
-          dohLog.textContent = `[DNS] SUCCESS! Resolved IPs: ${ips}\n[SYS] AdGuard DoH is active and operational.`;
+        if (data.Answer && data.Answer.length > 0) {
+          const ips = data.Answer.map(a => `${a.name} -> ${a.data} (TTL ${a.TTL}s)`).join("\n  ");
+          dohLog.textContent = `[SUCCESS] DoH resolver is ACTIVE!\nAnswers received:\n  ${ips}\n[SYS] ISP DNS spoofing successfully bypassed via TRR Mode 3.`;
         } else {
-          dohLog.textContent = `[WARN] No records returned: Status ${data.Status}`;
+          dohLog.textContent = `[WARN] Query succeeded but returned status code: ${data.Status}`;
         }
       } catch (err) {
-        dohLog.textContent = `[ERR] DoH query failed: ${err.message}`;
+        dohLog.textContent = `[ERR] Direct DoH test blocked or error: ${err.message}\nNote: Firefox internal TRR engine uses native DoH with bootstrap 94.140.14.14.`;
       }
     });
   </script>

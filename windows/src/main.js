@@ -367,12 +367,11 @@ btnTestDoh?.addEventListener("click", async () => {
   }
 });
 
-// Launch Firefox Engine Runner
 btnLaunchFirefox?.addEventListener("click", () => {
   Logger.log("SYS", "Preparing to run Loop via Standalone Firefox Engine (Gecko)", "info");
-  Logger.log("SYS", "Isolated profile: windows\\firefox-runner\\profile\\", "info");
-  Logger.log("SYS", "Policies: uBlock Origin active, Strict TRR Mode 3 active, ECH active", "success");
-  alert("Firefox Engine Runner is Ready!\n\nTo launch Loop with the isolated Mozilla Firefox (Gecko) engine:\nRun: windows\\firefox-runner\\launch-firefox.bat\n\nFeatures:\n- Native Firefox uBlock Origin extension\n- Strict TRR Mode 3 (100% encrypted DNS)\n- Encrypted Client Hello (bypasses ISP SNI blocking)");
+  Logger.log("SYS", "Dedicated profile: windows\\profile\\", "info");
+  Logger.log("SYS", "Strict TRR Mode 3 active, ECH anti-SNI active, uBlock Origin supported", "success");
+  alert("Loop Firefox Engine is Ready!\n\nTo launch Loop with the clean Android-style UI (no URL bar) and strict anti-block protection:\nRun: Loop.bat (or Loop.exe)\n\nFeatures:\n- URL bar & tabs removed via custom userChrome.css\n- Minimal floating button for Add-ons & Settings\n- Native uBlock Origin add-on support\n- Strict TRR Mode 3 (100% encrypted DNS)\n- Encrypted Client Hello (bypasses ISP SNI blocking)");
 });
 
 // ========================================================

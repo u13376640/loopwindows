@@ -36,8 +36,14 @@ Run `build-windows.bat`. If you have Rust/Cargo installed, it compiles `Loop.exe
 
 ## Features & Controls
 
+- **Android-Style Clean App Interface**:
+  - The Firefox browser URL bar, tabs bar, and navigation chrome are completely removed via custom `userChrome.css`.
+  - Content runs in clean edge-to-edge view, just like the Loop Android app.
+  - A sleek, minimal floating button/pill in the top corner provides access to **Add-ons (uBlock Origin)**, **Settings**, **Back**, and **Reload**.
+- **Custom Application Icon**:
+  - Custom Loop logo (`main-window.ico` / `main-window.png`) replaces the standard Firefox branding.
 - **Default Homepage**: `https://dcsplayer.blogspot.com/`
-- **Control Hub**: `profile/home.html` (Accessible via bookmark or `file:///.../profile/home.html`)
+- **Control Hub**: `profile/home.html` (Accessible anytime via `file:///.../profile/home.html` or Home action)
   - **Install uBlock Origin Button**: 1-click link to Mozilla Add-ons.
   - **URL Customization**: Unlock with authorization code `dcsus7`.
-  - **Live DoH Probe**: Real-time DNS resolution test against AdGuard DoH.
+  - **Live DoH Probe**: Real-time DNS resolution test against AdGuard DoH with multi-provider testing.
