@@ -18,20 +18,29 @@ browser[type="content"] {
   background-color: #121214 !important;
 }
 
-/* 2. Completely Hide Tabs Toolbar (Matches Android Edge-to-Edge) */
+/* 2. Minimal Draggable Titlebar with Native Windows Controls (Minimize, Maximize, Close) */
 #TabsToolbar {
-  visibility: collapse !important;
-  margin-bottom: 0 !important;
-  min-height: 0 !important;
-  height: 0 !important;
+  min-height: 34px !important;
+  height: 34px !important;
+  background: #18181b !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
+/* Hide all tabs, leaving the clean draggable header and window controls */
 #tabbrowser-tabs,
 #alltabs-button,
 #firefox-view-button,
 .titlebar-spacer,
 #titlebar-spacer {
   display: none !important;
+}
+
+.titlebar-buttonbox-container {
+  display: flex !important;
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  height: 34px !important;
 }
 
 /* 3. Completely Hide URL Bar & Search UI */

@@ -122,6 +122,11 @@ const btnSettings = document.getElementById("btn-settings");
 const settingsDrawer = document.getElementById("settings-drawer");
 const btnCloseSettings = document.getElementById("btn-close-settings");
 
+// Window Caption Controls
+const btnWinMin = document.getElementById("btn-win-min");
+const btnWinMax = document.getElementById("btn-win-max");
+const btnWinClose = document.getElementById("btn-win-close");
+
 // Settings Elements
 const btnUnlockUrl = document.getElementById("btn-unlock-url");
 const urlLockStatus = document.getElementById("url-lock-status");
@@ -281,6 +286,47 @@ btnReload?.addEventListener("click", () => {
 
 btnHome?.addEventListener("click", () => {
   navigate(currentActiveUrl);
+});
+
+// Window Caption Controls (Minimize, Maximize, Close)
+btnWinMin?.addEventListener("click", async () => {
+  try {
+    if (appWindow?.minimize) {
+      await appWindow.minimize();
+    } else {
+      Logger.log("SYS", "Window minimize requested", "info");
+    }
+  } catch (err) {
+    console.warn("Minimize error:", err);
+  }
+});
+
+btnWinMax?.addEventListener("click", async () => {
+  try {
+    if (appWindow?.toggleMaximize) {
+      await appWindow.toggleMaximize();
+    } else if (appWindow?.maximize) {
+      await appWindow.maximize();
+    } else if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  } catch (err) {
+    console.warn("Maximize error:", err);
+  }
+});
+
+btnWinClose?.addEventListener("click", async () => {
+  try {
+    if (appWindow?.close) {
+      await appWindow.close();
+    } else {
+      window.close();
+    }
+  } catch (err) {
+    console.warn("Close error:", err);
+  }
 });
 
 btnDirectView?.addEventListener("click", () => {

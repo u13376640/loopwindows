@@ -153,9 +153,47 @@ body, html {
   border-color: #60a5fa;
 }
 
-/* Native Windows OS Caption Controls are provided by Windows 11 */
+/* Window Caption Controls (Minimize, Maximize, Close) */
 .window-controls {
-  display: none !important;
+  display: flex !important;
+  align-items: center;
+  -webkit-app-region: no-drag;
+  margin-left: 8px;
+  height: 100%;
+}
+
+.caption-btn {
+  width: 46px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  padding: 0;
+  -webkit-app-region: no-drag;
+}
+
+.caption-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+}
+
+.caption-btn.btn-close:hover {
+  background: #e81123 !important;
+  color: #ffffff !important;
+}
+
+.caption-btn:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.caption-btn.btn-close:active {
+  background: #bf0f1d !important;
+  color: #ffffff !important;
 }
 
 /* Progress bar */
